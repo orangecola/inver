@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script>
+        var map;
+        var parsedCSV
+        var date = "22/3/14"
+        var hour = "14"
+        var footfall
+
+        d3.csv("idackandataset1.csv", function (datasetText) {
+            datasetText.forEach(function (d) {
+                d.hour = +d.hour
+                d.footfall = +d.footfall;
+            })
+
+            locations = {
+
+                t1: {
+                    //Changi Airport T1
+                    id: 22496,
+                    center: { lat: 1.361228, lng: 103.990191 },
+                },
+
+                t2: {
+                    //Changi Airport T2
+                    id: 23287,
+                    center: { lat: 1.355032, lng: 103.988772 },
+                },
+
+                t3: {
+                    //Changi Airport T3
+                    id: 16417,
+                    center: { lat: 1.355692, lng: 103.985912 },
+                },
+
+                amk1: {
+                    //AMK Hub
+                    id: 17668,
+                    center: { lat: 1.369228, lng: 103.847449 },
+                },
+
+                amk2: {
+                    //YCK MRT
+                    id: 11126,
+                    center: { lat: 1.381947, lng: 103.844717 },
+                },
+
+                amk3: {
+                    //CHIJ St Nicholas Girl's School
+                    id: 16417,
+                    center: { lat: 1.373891, lng: 103.834699 },
+                },
+
+                cbd1: {
+                    //Marina bay sands
+                    id: 22496,
+                    center: { lat: 1.2832, lng: 103.8603 },
+                },
+
+                cbd2: {
+                    //NTUC Building
+                    id: 16430,
+                    center: { lat: 1.282548, lng: 103.853012 },
+                },
+
+                cbd3: {
+                    //Raffles City
+                    id: 2764,
+                    center: { lat: 1.2939, lng: 103.8533 },
+                },
+
+                orchard1: {
+                    //Orchard MRT / ION Orchard
+                    id: 22670,
+                    center: { lat: 1.3039, lng: 103.8323 },
+                },
+
+                orchard2: {
+                    //313@Somerset
+                    id: 13593,
+                    center: { lat: 1.3010, lng: 103.8385 },
+                },
+
+                orchard3: {
+                    //Tanglin Mall
+                    id: 4911,
+                    center: { lat: 1.304946, lng: 103.823882 },
+                }
+            };
+            parsedCSV = datasetText
+        });
+
+        function getFootfall(date, id, hour) {
+            return parsedCSV.filter(function (d, i) {
+                if (d["shape id"] == id && d["day"] == date && d["hour"] == hour)
+                    return d
+            })
+        }
+        function CenterControl(controlDiv, map) {
+
+            // Set CSS for the control border.
+            var controlUI = document.createElement('div');
+            controlUI.style.backgroundColor = '#fff';
+            controlUI.style.border = '2px solid #fff';
+            controlUI.style.borderRadius = '3px';
+            controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+            controlUI.style.cursor = 'pointer';
+            controlUI.style.margin = '10px';
+            controlUI.style.textAlign = 'center';
+            controlUI.title = 'Click to recenter the map';
+            controlDiv.appendChild(controlUI);
+
+            // Set CSS for the control interior.
+            var controlText = document.createElement('div');
+            controlText.style.color = 'rgb(25,25,25)';
+            controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+            controlText.style.fontSize = '11px';
+            controlText.style.lineHeight = '38px';
+            controlText.style.paddingLeft = '8px';
+            controlText.style.paddingRight = '8px';
+            controlText.innerHTML = 'Center Map';
+            controlUI.appendChild(controlText);
+
+            // Setup the click event listeners: simply set the map to Chicago.
+            controlUI.addEventListener('click', function () {
+                alert("Something");
+            });
+
+        }
+
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 1.3521, lng: 103.8198 },
+                zoom: 12
+            });
+            var infoWindow = new google.maps.InfoWindow();
+            //Construct the circle for each value in footfall
+
+            for (var point in locations) {
+                var color
+                var footfall = getFootfall(date, locations[point].id, hour)[0].footfall
+                if (footfall < 1000) {
+                    color = '#fee8c8'
+                }
+                else if (footfall > 1000 && footfall < 5000) {
+                    color = '#fdbb84'
+                }
+                else {
+                    color = '#e34a33'
+                }
+                //Add the location to the map
+                var cityCircle = new google.maps.Circle({
+                    id: locations[point].id,
+                    strokeColor: color,
+                    fillColor: color,
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillOpacity: 0.75,
+                    map: map,
+                    center: locations[point].center,
+                    radius: Math.sqrt(footfall) * 5
+
+
+                })
+
+                google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
+                    return function () {
+                        console.log(getFootfall(date, locations[point].id, hour)[0].footfall)
+                        infoWindow.setContent("<div style = 'width:50px;min-height:20px'>" + getFootfall(date, locations[point].id, hour)[0].footfall + "</div>");
+                        infoWindow.setPosition(cityCircle.getCenter());
+                        infoWindow.open(map);
+                    }
+                })(cityCircle, point));
+            }
+            // Construct your control in whatever manner is appropriate.
+            // Generally, your constructor will want access to the
+            // DIV on which you'll attach the control UI to the Map.
+            var controlDiv = document.createElement('div');
+
+            var myControl = new CenterControl(controlDiv);
+
+            // We don't really need to set an index value here, but
+            // this would be how you do it. Note that we set this
+            // value as a property of the DIV itself.
+            controlDiv.index = 1;
+
+            // Add the control to the map at a designated control position
+            // by pushing it on the position's array. This code will
+            // implicitly add the control to the DOM, through the Map
+            // object. You should not attach the control manually.
+            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+
+        }
+
+
+
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZbiC6OYs1vcz-qlkVsiZZ-hrCS0bsfmo&callback=initMap"
+            async defer></script>
+</body>
+</html>
