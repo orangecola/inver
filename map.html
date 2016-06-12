@@ -181,8 +181,8 @@
                     fillOpacity: 0.75,
                     map: map,
                     center: locations[point].center,
-                    radius: Math.sqrt(footfall) * 5
-
+                    radius: Math.sqrt(footfall) * 5,
+                    visible: false
 
                 })
                 //Graphic Code
@@ -276,8 +276,19 @@
                         infoWindow.open(map);
                     }
                 })(cityCircle, point));
-            }
 
+                map.addListener('zoom_changed', (function (cityCircle) {
+                    return function () {
+                        console.log(map.getZoom())
+                        if (map.getZoom() == 15) {
+                            cityCircle.setVisible(true);
+                        }
+                        if (map.getZoom() == 14) {
+                            cityCircle.setVisible(false);
+                        }
+                    }
+                })(cityCircle));
+            }
             // Construct your control in whatever manner is appropriate.
             // Generally, your constructor will want access to the
             // DIV on which you'll attach the control UI to the Map.
