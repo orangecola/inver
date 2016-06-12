@@ -28,87 +28,117 @@
         var charts = {}
 
 
+        locations = {
 
+            t1: {
+                //Changi Airport T1
+                id: 12432,
+                center: { lat: 1.361228, lng: 103.990191 },
+            },
+
+            t2: {
+                //Changi Airport T2
+                id: 23287,
+                center: { lat: 1.355032, lng: 103.988772 },
+            },
+
+            t3: {
+                //Changi Airport T3
+                id: 16417,
+                center: { lat: 1.355692, lng: 103.985912 },
+            },
+
+            amk1: {
+                //AMK Hub
+                id: 17668,
+                center: { lat: 1.369228, lng: 103.847449 },
+            },
+
+            amk2: {
+                //YCK MRT
+                id: 11126,
+                center: { lat: 1.381947, lng: 103.844717 },
+            },
+
+            amk3: {
+                //CHIJ St Nicholas Girl's School
+                id: 16417,
+                center: { lat: 1.373891, lng: 103.834699 },
+            },
+
+            cbd1: {
+                //Marina bay sands
+                id: 22496,
+                center: { lat: 1.2832, lng: 103.8603 },
+            },
+
+            cbd2: {
+                //NTUC Building
+                id: 16430,
+                center: { lat: 1.282548, lng: 103.853012 },
+            },
+
+            cbd3: {
+                //Raffles City
+                id: 2764,
+                center: { lat: 1.2939, lng: 103.8533 },
+            },
+
+            orchard1: {
+                //Orchard MRT / ION Orchard
+                id: 22670,
+                center: { lat: 1.3039, lng: 103.8323 },
+            },
+
+            orchard2: {
+                //313@Somerset
+                id: 13593,
+                center: { lat: 1.3010, lng: 103.8385 },
+            },
+
+            orchard3: {
+                //Tanglin Mall
+                id: 4911,
+                center: { lat: 1.304946, lng: 103.823882 },
+            }
+        };
+
+        largeLocations = {
+            amk: {
+                id1: 17668,
+                id2: 11126,
+                id3: 16417,
+                center: { lat: 1.3691, lng: 103.8454}
+            },
+            
+            orchard: {
+                id1: 22670,
+                id2: 13593,
+                id3: 4911,
+                center: {lat: 1.304843, lng: 103.831822}
+            },
+
+            cbd: {
+                id1: 22496,
+                id2: 16430,
+                id3: 2764,
+                center: {lat: 1.279148, lng: 103.845340}
+            },
+
+            changi: {
+                id1: 12432,
+                id2: 23287,
+                id3: 16417,
+                center: { lat: 1.3644, lng: 103.9915}
+            }
+        };
         d3.csv("idackandataset1.csv", function (datasetText) {
             datasetText.forEach(function (d) {
                 d.hour = +d.hour
                 d.footfall = +d.footfall;
             })
 
-            locations = {
-
-                t1: {
-                    //Changi Airport T1
-                    id: 22496,
-                    center: { lat: 1.361228, lng: 103.990191 },
-                },
-
-                t2: {
-                    //Changi Airport T2
-                    id: 23287,
-                    center: { lat: 1.355032, lng: 103.988772 },
-                },
-
-                t3: {
-                    //Changi Airport T3
-                    id: 16417,
-                    center: { lat: 1.355692, lng: 103.985912 },
-                },
-
-                amk1: {
-                    //AMK Hub
-                    id: 17668,
-                    center: { lat: 1.369228, lng: 103.847449 },
-                },
-
-                amk2: {
-                    //YCK MRT
-                    id: 11126,
-                    center: { lat: 1.381947, lng: 103.844717 },
-                },
-
-                amk3: {
-                    //CHIJ St Nicholas Girl's School
-                    id: 16417,
-                    center: { lat: 1.373891, lng: 103.834699 },
-                },
-
-                cbd1: {
-                    //Marina bay sands
-                    id: 22496,
-                    center: { lat: 1.2832, lng: 103.8603 },
-                },
-
-                cbd2: {
-                    //NTUC Building
-                    id: 16430,
-                    center: { lat: 1.282548, lng: 103.853012 },
-                },
-
-                cbd3: {
-                    //Raffles City
-                    id: 2764,
-                    center: { lat: 1.2939, lng: 103.8533 },
-                },
-
-                orchard1: {
-                    //Orchard MRT / ION Orchard
-                    id: 22670,
-                    center: { lat: 1.3039, lng: 103.8323 },
-                },
-
-                orchard2: {
-                    //313@Somerset
-                    id: 13593,
-                    center: { lat: 1.3010, lng: 103.8385 },
-                },
-
-                orchard3: {
-                    //Tanglin Mall
-                    id: 4911,
-                    center: { lat: 1.304946, lng: 103.823882 },
-                }
-            };
+            
             parsedCSV = datasetText
         });
 
@@ -158,6 +188,137 @@
             });
             var infoWindow = new google.maps.InfoWindow();
             //Construct the circle for each value in footfall
+
+            for (var point in largeLocations) {
+                var color
+                var footfall = getFootfall(date, largeLocations[point].id1, hour)[0].footfall + getFootfall(date, largeLocations[point].id2, hour)[0].footfall + getFootfall(date, largeLocations[point].id3, hour)[0].footfall
+                if (footfall < 1000) {
+                    color = '#fee8c8'
+                }
+                else if (footfall > 1000 && footfall < 5000) {
+                    color = '#fdbb84'
+                }
+                else {
+                    color = '#e34a33'
+                }
+                //Add the location to the map
+                var cityCircle = new google.maps.Circle({
+                    //id: locations[point].id,
+                    strokeColor: color,
+                    fillColor: color,
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillOpacity: 0.75,
+                    map: map,
+                    center: largeLocations[point].center,
+                    radius: Math.sqrt(footfall) * 5,
+                    visible: true
+
+                })
+                /*
+                //Graphic Code
+
+                //Prepare Axes
+                var margin = { top: 20, right: 20, bottom: 70, left: 100 },
+                width = 600 - margin.left - margin.right,
+                height = 300 - margin.top - margin.bottom;
+
+                var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+                var y = d3.scale.linear().range([height, 0]);
+
+                var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom")
+
+                var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient("left")
+
+                //Create a SVG with previous parameters
+                var svg = d3.select(document.createElement("svg"))
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                  .append("g")
+                    .attr("transform",
+                          "translate(" + margin.left + "," + margin.top + ")");
+
+                var filteredData = parsedCSV.filter(function (d, i) {
+                    if (d["shape id"] == locations[point].id && d["day"] == date) {
+                        return d
+                    }
+                })
+
+                //Sort by hour
+                filteredData.sort(function (a, b) {
+                    return a.hour - b.hour;
+                })
+
+                //Set domains based on the data
+                x.domain(filteredData.map(function (d) { return d.hour; }));
+                y.domain([0, d3.max(filteredData, function (d) { return d.footfall; })]);
+
+                //Creation of X axis
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis)
+                  .selectAll("text")
+                    .style("text-anchor", "end")
+                    .attr("dx", "-.8em")
+                    .attr("dy", "-.55em")
+                    .attr("transform", "rotate(-90)");
+
+                //Creation of Y axis
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis)
+                  .append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end")
+                    .text("Footfall");
+
+                //Creation of bars
+                svg.selectAll("bar")
+                    .data(filteredData)
+                    .enter().append("rect")
+                    .attr("fill", function (d) {
+                        if (d.footfall > 5000) {
+                            return "#e34a33";
+                        } else if (d.footfall > 1000) {
+                            return "#fdbb84";
+                        }
+                        return "#fee8c8";
+                    })
+                    .attr("x", function (d) { return x(d.hour); })
+                    .attr("width", x.rangeBand())
+                    .attr("y", function (d) { return y(d.footfall); })
+                    .attr("height", function (d) { return height - y(d.footfall); });
+
+                locations[point].chart = svg.node().outerHTML
+                */
+
+                google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
+                    return function () {
+                        map.setZoom(15);
+                        map.setCenter(cityCircle.getCenter());
+                    }
+                })(cityCircle, point));
+
+                //Circles only appear when sufficiently zoomed out
+                map.addListener('zoom_changed', (function (cityCircle) {
+                    return function () {
+                        if (map.getZoom() == 14) {
+                            cityCircle.setVisible(true);
+                        }
+                        if (map.getZoom() == 15) {
+                            cityCircle.setVisible(false);
+                        }
+                    }
+                })(cityCircle));
+            }
 
             for (var point in locations) {
                 var color
@@ -277,9 +438,9 @@
                     }
                 })(cityCircle, point));
 
+                //Circles only appear when sufficiently zoomed in
                 map.addListener('zoom_changed', (function (cityCircle) {
                     return function () {
-                        console.log(map.getZoom())
                         if (map.getZoom() == 15) {
                             cityCircle.setVisible(true);
                         }
