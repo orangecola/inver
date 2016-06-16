@@ -39,7 +39,7 @@ d3.csv("SacramentocrimeJanuary2006.csv", function (datasetText) {
 		}
 	}
 		var leaders = groupId
-	.map(function(d) {return { text: d.date, size: d.count, data: d, sentiment: Math.floor(Math.random() * 100)};})
+	.map(function(d) {return { text: d.date, size: d.count, count:d.count, data: d, sentiment: Math.floor(Math.random() * 100)};})
 	.sort(function(a, b) {return d3.descending(a.size, b.size);})
 	.slice(0,150)
 	console.log(leaders)
@@ -89,7 +89,7 @@ function draw(words) {
           return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
         })
         .text(function(d) { return d.text; })
-		.on("click", function(d) {$("#data").html("<h1>Time:" + d.text + "</h1><h2>Amount: " + d.size + "</h2><h3>Sentiment:" + d.sentiment + "</h3>" + "<p>" + iteminfo(d.data.objects) + "</p>")});
+		.on("click", function(d) {$("#data").html("<h1>Time:" + d.text + "</h1><h2>Amount: " + d.count + "</h2><h3>Sentiment:" + d.sentiment + "</h3>" + "<p>" + iteminfo(d.data.objects) + "</p>")});
   }
   
 function iteminfo(data) {
