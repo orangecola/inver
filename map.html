@@ -16,6 +16,59 @@
         #map {
             height: 100%;
         }
+		
+		body {
+            font: 10px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .bar {
+            fill: orange;
+        }
+
+            .bar:hover {
+                fill: orangered;
+            }
+
+        .x.axis path {
+            display: none;
+        }
+
+        .d3-tip {
+            line-height: 1;
+            font-weight: bold;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 2px;
+        }
+
+            /* Creates a small triangle extender for the tooltip */
+            .d3-tip:after {
+                box-sizing: border-box;
+                display: inline;
+                font-size: 10px;
+                width: 100%;
+                line-height: 1;
+                color: rgba(0, 0, 0, 0.8);
+                content: "\25BC";
+                position: absolute;
+                text-align: center;
+            }
+
+            /* Style northward tooltips differently */
+            .d3-tip.n:after {
+                margin: -1px 0 0 0;
+                top: 100%;
+                left: 0;
+            }
+	
     </style>
 </head>
 <body>
@@ -23,6 +76,7 @@
     <div id="right" style="width:25%;flex:1;overflow-y:scroll;"></div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
     <script>
         var map;
         var parsedCSV
@@ -287,9 +341,15 @@
                     .scale(y)
                     .orient("left")
 
+				var tip = d3.tip()
+				  .attr('class', 'd3-tip')
+				  .offset([-10, 0])
+				  .html(function (d) {
+					  return "<strong>Footfall:</strong> <span style='color:red'>" + d.footfall + "</span>";
+				  })	
                 //Create a SVG with previous parameters
-                //var svg = d3.select("#right").append("svg")
-                var svg = d3.select(document.createElement("svg"))
+                var svg = d3.select("#right").append("svg")
+                //var svg = d3.select(document.createElement("svg"))
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
                     .attr("display", "inline")
@@ -297,6 +357,7 @@
                     .attr("transform",
                           "translate(" + margin.left + "," + margin.top + ")");
 
+				svg.call(tip);
                 var filteredData = parsedCSV.filter(function (d, i) {
                     if (d["shape id"] == locations[point].id && d["day"] == date) {
                         return d
@@ -349,8 +410,10 @@
                     .attr("x", function (d) { return x(d.hour); })
                     .attr("width", x.rangeBand())
                     .attr("y", function (d) { return y(d.footfall); })
-                    .attr("height", function (d) { return height - y(d.footfall); });
-
+                    .attr("height", function (d) { return height - y(d.footfall); })
+					.on('mouseover', tip.show)
+					.on('mouseout', tip.hide);
+					
                 locations[point].chart = svg.node().outerHTML
                 google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
                     return function () {
@@ -393,11 +456,9 @@
             // implicitly add the control to the DOM, through the Map
             // object. You should not attach the control manually.
             map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
-
+			
+			//$("#right").html("")
         }
-
-
-
 
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZbiC6OYs1vcz-qlkVsiZZ-hrCS0bsfmo&callback=initMap"
