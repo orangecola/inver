@@ -5,9 +5,15 @@
 <script>
 
 var width = 750, height = 500
-var countScale = d3.scale.linear().range([10,60])
+var countScale = d3.scale.linear().range([10, 60])
+
+var color_domain = [10, 30, 50, 70, 90]
 var fill = d3.scale.category20();
 var groupId = [];
+var color = d3.scale.threshold()
+  .domain(color_domain)
+  .range(["#adfcad", "#ffcb40", "#ffba00", "#ff7d73", "#ff4e40", "#ff1300"]);
+
 d3.csv("SacramentocrimeJanuary2006.csv", function (datasetText) {
 	
 	var maxId = 0;
@@ -25,15 +31,18 @@ d3.csv("SacramentocrimeJanuary2006.csv", function (datasetText) {
 		
 		if (exists) {
 			groupId[z].count++;
+			groupId[z].objects.push(item);
 			}
 		else {
-			groupId.push({date : item.cdatetime, count : 1})
+			groupId.push({date : item.cdatetime, count : 1, objects: []})
+			groupId[(groupId.length-1)].objects.push(item)
 		}
 	}
 		var leaders = groupId
-	.map(function(d) {return { text: d.date, size: d.count};})
+	.map(function(d) {return { text: d.date, size: d.count, data: d, sentiment: Math.floor(Math.random() * 100)};})
 	.sort(function(a, b) {return d3.descending(a.size, b.size);})
 	.slice(0,150)
+	console.log(leaders)
 	
 	countScale.domain([d3.min(leaders, function(d) {return d.size;}), d3.max(leaders, function(d){return d.size;})])
 	d3.layout.cloud().size([width, height])
@@ -74,14 +83,23 @@ function draw(words) {
       .enter().append("text")
         .style("font-size", function(d) { return d.size + "px"; })
         .style("font-family", "Impact")
-        .style("fill", function(d, i) { return fill(i); })
+        .style("fill", function(d, i) { return color(d.sentiment); })
         .attr("text-anchor", "middle")
         .attr("transform", function(d) {
           return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
         })
         .text(function(d) { return d.text; })
-		.on("click", function(d) {$("#data").html("<h1>" + d.text + " " + d.size + "</h1>");});
+		.on("click", function(d) {$("#data").html("<h1>Time:" + d.text + "</h1><h2>Amount: " + d.size + "</h2><h3>Sentiment:" + d.sentiment + "</h3>" + "<p>" + iteminfo(d.data.objects) + "</p>")});
   }
+  
+function iteminfo(data) {
+	var string = ""
+	for (var i=0; i < data.length; i++) {
+		//console.log(data[i])
+		string += JSON.stringify(data[i]) + "<br>"
+	}
+	return string
+} 
 </script>
 <div id="data"></div>
 </body>
