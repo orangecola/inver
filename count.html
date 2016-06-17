@@ -12,7 +12,7 @@ var fill = d3.scale.category20();
 var groupId = [];
 var color = d3.scale.threshold()
   .domain(color_domain)
-  .range(["#adfcad", "#ffcb40", "#ffba00", "#ff7d73", "#ff4e40", "#ff1300"]);
+  .range(["#ff1300", "#ff4e40", "#ff7d73", "#ffba00", "#ffcb40", "#adfcad"])
 
 d3.csv("SacramentocrimeJanuary2006.csv", function (datasetText) {
 	
@@ -54,23 +54,6 @@ d3.csv("SacramentocrimeJanuary2006.csv", function (datasetText) {
 	.on("end", draw)
 	.start();
 })
-		/*
-		if (!groupId[item.cdatetime]){
-				groupId[item.cdatetime] = [];
-			}
-			
-		groupId[item.cdatetime].push({cdatetime: item.cdatetime, address: item.address});
-		
-		}
-	//for (time in groupId){
-		//console.log("Amount of crimes at " + time + " = " + groupId[time].length)
-	//};
-	
-	
-
-		*/
-	
-	
 		
 function draw(words) {
     d3.select("body").insert("svg", ":first-child")
