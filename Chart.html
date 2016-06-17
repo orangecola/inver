@@ -3,9 +3,63 @@
 <head>
     <title></title>
     <meta charset="utf-8" />
+    <style>
+        body {
+            font: 10px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .bar {
+            fill: orange;
+        }
+
+            .bar:hover {
+                fill: orangered;
+            }
+
+        .x.axis path {
+            display: none;
+        }
+
+        .d3-tip {
+            line-height: 1;
+            font-weight: bold;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 2px;
+        }
+
+            /* Creates a small triangle extender for the tooltip */
+            .d3-tip:after {
+                box-sizing: border-box;
+                display: inline;
+                font-size: 10px;
+                width: 100%;
+                line-height: 1;
+                color: rgba(0, 0, 0, 0.8);
+                content: "\25BC";
+                position: absolute;
+                text-align: center;
+            }
+
+            /* Style northward tooltips differently */
+            .d3-tip.n:after {
+                margin: -1px 0 0 0;
+                top: 100%;
+                left: 0;
+            }
+    </style>
 </head>
 <body>
     <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
     <script type="text/javascript">
 
         //Set Margins for axes
@@ -26,6 +80,12 @@
             .scale(y)
             .orient("left")
 
+        var tip = d3.tip()
+          .attr('class', 'd3-tip')
+          .offset([-10, 0])
+          .html(function (d) {
+              return "<strong>Footfall:</strong> <span style='color:red'>" + d.footfall + "</span>";
+          })
         //Create a SVG with previous parameters
         var svg = d3.select("body").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -33,6 +93,8 @@
           .append("g")
             .attr("transform",
                   "translate(" + margin.left + "," + margin.top + ")");
+
+        svg.call(tip);
 
         //Load the data
         d3.csv("idackandataset1.csv", function (datasetText) {
@@ -83,7 +145,7 @@
             svg.selectAll("bar")
                 .data(filteredData)
               .enter().append("rect")
-                .attr("fill", function(d) {
+                .attr("fill", function (d) {
                     if (d.footfall > 10000) {
                         return "#e34a33";
                     } else if (d.footfall > 1000) {
@@ -94,7 +156,9 @@
                 .attr("x", function (d) { return x(d.hour); })
                 .attr("width", x.rangeBand())
                 .attr("y", function (d) { return y(d.footfall); })
-                .attr("height", function (d) { return height - y(d.footfall); });
+                .attr("height", function (d) { return height - y(d.footfall); })
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide);
         });
     </script>
 </body>
