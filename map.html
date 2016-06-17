@@ -241,14 +241,15 @@
             controlText.style.lineHeight = '38px';
             controlText.style.paddingLeft = '8px';
             controlText.style.paddingRight = '8px';
-            controlText.innerHTML = 'Center Map';
+            controlText.innerHTML = 'Back';
             controlUI.appendChild(controlText);
-
-            // Setup the click event listeners: simply set the map to Chicago.
+			
+			
             controlUI.addEventListener('click', function () {
                 map.setZoom(12)
 				map.setCenter({lat: 1.3521, lng: 103.8198})
 				infoWindow.close()
+				$(".chart").css("display", "none")
             });
 
         }
@@ -311,6 +312,7 @@
             }
 
             for (var point in locations) {
+				console.log(point)
                 var color
                 var footfall = getFootfall(date, locations[point].id, hour)[0].footfall
                 if (footfall < 1000) {
@@ -324,7 +326,8 @@
                 }
                 //Add the location to the map
                 var cityCircle = new google.maps.Circle({
-                    id: locations[point].name,
+                    id: point,
+					name: locations[point].name,
                     strokeColor: color,
                     fillColor: color,
                     strokeOpacity: 0.8,
@@ -341,7 +344,6 @@
 
                 //Prepare Axes
                 var margin = { top: 20, right: 20, bottom: 70, left: 100 }
-                console.log($("#right").width())
 
                 width = 600 - margin.left - margin.right,
                 height = 300 - margin.top - margin.bottom;
@@ -367,9 +369,11 @@
                 //Create a SVG with previous parameters
                 var svg = d3.select("#right").append("svg")
                 //var svg = d3.select(document.createElement("svg"))
+					.attr("class", "chart")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
-                    .attr("display", "inline")
+                    .attr("style", "display: none")
+					.attr("id", point)
                   .append("g")
                     .attr("transform",
                           "translate(" + margin.left + "," + margin.top + ")");
@@ -439,10 +443,13 @@
                 locations[point].chart = svg.node().outerHTML
                 google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
                     return function () {
-                        infoWindow.setContent("<div id='info'><h1>Current Footfall:" + cityCircle.footfall+ "<br>Current Location:"+ cityCircle.id +"</h1><svg width='600' height='300'>" + locations[point].chart + "</div>");
+                        infoWindow.setContent("<div id='info'><h1>Current Footfall:" + cityCircle.footfall+ "<br>Current Location:"+ cityCircle.name +"</h1><svg width='600' height='300'>" + locations[point].chart + "</div>");
                         infoWindow.setPosition(cityCircle.getCenter());
                         infoWindow.open(map);
                         console.log(this.filteredData)
+						$(".chart").css("display", "none")
+						//$("#"+point).siblings().css("display", "none")
+						$("#"+point).css("display", "inline")
                         //$("#right").html("<div id='info'><svg width='600' height='300'>" + locations[point].chart + "</div>");
                     }
                 })(cityCircle, point));
@@ -481,6 +488,7 @@
 				return function() {
 					if (map.getZoom() <= 14) {
 						infoWindow.close()
+						$(".chart").css("display", "none")
 					}
 				}
 			})(infoWindow));
