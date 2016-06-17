@@ -78,10 +78,11 @@
     <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
     <script>
+		var d = new Date();
         var map;
         var parsedCSV
         var date = "22/3/14"
-        var hour = "14"
+        var hour = d.getHours()
         var footfall
         var charts = {}
 
@@ -90,72 +91,84 @@
 
             t1: {
                 //Changi Airport T1
+				name: "Changi Airport 1",
                 id: 12432,
                 center: { lat: 1.361228, lng: 103.990191 },
             },
 
             t2: {
                 //Changi Airport T2
+				name: "Changi Airport 2",
                 id: 23287,
                 center: { lat: 1.355032, lng: 103.988772 },
             },
 
             t3: {
                 //Changi Airport T3
+				name: "Changi Airport 3",
                 id: 16417,
                 center: { lat: 1.355692, lng: 103.985912 },
             },
 
             amk1: {
                 //AMK Hub
+				name: "Ang Mo Kio 1",
                 id: 17668,
                 center: { lat: 1.369228, lng: 103.847449 },
             },
 
             amk2: {
                 //YCK MRT
+				name: "Ang Mo Kio 2",
                 id: 11126,
                 center: { lat: 1.381947, lng: 103.844717 },
             },
 
             amk3: {
                 //CHIJ St Nicholas Girl's School
+				name: "Ang Mo Kio 3",
                 id: 16417,
                 center: { lat: 1.373891, lng: 103.834699 },
             },
 
             cbd1: {
                 //Marina bay sands
+				name: "CBD area 1",
                 id: 22496,
                 center: { lat: 1.2832, lng: 103.8603 },
             },
 
             cbd2: {
                 //NTUC Building
+				name: "CBD area 2",
                 id: 16430,
                 center: { lat: 1.282548, lng: 103.853012 },
             },
 
             cbd3: {
                 //Raffles City
+				name: "CBD area 3",
                 id: 2764,
                 center: { lat: 1.2939, lng: 103.8533 },
             },
 
             orchard1: {
                 //Orchard MRT / ION Orchard
+				name: "Orchard Road 1",
                 id: 22670,
                 center: { lat: 1.3039, lng: 103.8323 },
             },
 
             orchard2: {
                 //313@Somerset
+				name: "Orchard Road 2",
                 id: 13593,
                 center: { lat: 1.3010, lng: 103.8385 },
             },
 
             orchard3: {
                 //Tanglin Mall
+				name: "Orchard Road 3",
                 id: 4911,
                 center: { lat: 1.304946, lng: 103.823882 },
             }
@@ -206,7 +219,7 @@
                     return d
             })
         }
-        function CenterControl(controlDiv, map) {
+        function CenterControl(controlDiv, map, infoWindow) {
 
             // Set CSS for the control border.
             var controlUI = document.createElement('div');
@@ -233,7 +246,9 @@
 
             // Setup the click event listeners: simply set the map to Chicago.
             controlUI.addEventListener('click', function () {
-                alert("Something");
+                map.setZoom(12)
+				map.setCenter({lat: 1.3521, lng: 103.8198})
+				infoWindow.close()
             });
 
         }
@@ -284,10 +299,11 @@
                 //Circles only appear when sufficiently zoomed out
                 map.addListener('zoom_changed', (function (cityCircle) {
                     return function () {
-                        if (map.getZoom() == 14) {
+
+                        if (map.getZoom() <= 14) {
                             cityCircle.setVisible(true);
                         }
-                        if (map.getZoom() == 15) {
+                        if (map.getZoom() >= 15) {
                             cityCircle.setVisible(false);
                         }
                     }
@@ -308,7 +324,7 @@
                 }
                 //Add the location to the map
                 var cityCircle = new google.maps.Circle({
-                    id: locations[point].id,
+                    id: locations[point].name,
                     strokeColor: color,
                     fillColor: color,
                     strokeOpacity: 0.8,
@@ -317,6 +333,7 @@
                     map: map,
                     center: locations[point].center,
                     radius: Math.sqrt(footfall) * 5,
+					footfall: footfall,
                     visible: false
 
                 })
@@ -422,9 +439,7 @@
                 locations[point].chart = svg.node().outerHTML
                 google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
                     return function () {
-                        //console.log(svg.node().outerHTML)
-                        //console.log(getFootfall(date, locations[point].id, hour)[0].footfall)
-                        infoWindow.setContent("<div id='info'><svg width='600' height='300'>" + locations[point].chart + "</div>");
+                        infoWindow.setContent("<div id='info'><h1>Current Footfall:" + cityCircle.footfall+ "<br>Current Location:"+ cityCircle.id +"</h1><svg width='600' height='300'>" + locations[point].chart + "</div>");
                         infoWindow.setPosition(cityCircle.getCenter());
                         infoWindow.open(map);
                         console.log(this.filteredData)
@@ -435,10 +450,10 @@
                 //Circles only appear when sufficiently zoomed in
                 map.addListener('zoom_changed', (function (cityCircle) {
                     return function () {
-                        if (map.getZoom() == 15) {
+                        if (map.getZoom() >= 15) {
                             cityCircle.setVisible(true);
                         }
-                        if (map.getZoom() == 14) {
+                        if (map.getZoom() <= 14) {
                             cityCircle.setVisible(false);
                         }
                     }
@@ -449,7 +464,7 @@
             // DIV on which you'll attach the control UI to the Map.
             var controlDiv = document.createElement('div');
 
-            var myControl = new CenterControl(controlDiv);
+            var myControl = new CenterControl(controlDiv, map, infoWindow);
 
             // We don't really need to set an index value here, but
             // this would be how you do it. Note that we set this
@@ -462,7 +477,13 @@
             // object. You should not attach the control manually.
             map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
 			
-			//$("#right").html("")
+			map.addListener('zoom_changed', (function(infoWindow) {
+				return function() {
+					if (map.getZoom() <= 14) {
+						infoWindow.close()
+					}
+				}
+			})(infoWindow));
         }
 
     </script>

@@ -7,12 +7,11 @@
 var width = 750, height = 500
 var countScale = d3.scale.linear().range([10, 60])
 
-var color_domain = [10, 30, 50, 70, 90]
-var fill = d3.scale.category20();
+var color_domain = [-0.5, 0.5]
 var groupId = [];
 var color = d3.scale.threshold()
   .domain(color_domain)
-  .range(["#ff1300", "#ff4e40", "#ff7d73", "#ffba00", "#ffcb40", "#adfcad"])
+  .range(["#ff1300", "#ffba00", "#adfcad"])
 
 d3.csv("SacramentocrimeJanuary2006.csv", function (datasetText) {
 	
@@ -39,7 +38,7 @@ d3.csv("SacramentocrimeJanuary2006.csv", function (datasetText) {
 		}
 	}
 		var leaders = groupId
-	.map(function(d) {return { text: d.date, size: d.count, count:d.count, data: d, sentiment: Math.floor(Math.random() * 100)};})
+	.map(function(d) {return { text: d.date, size: d.count, count:d.count, data: d, sentiment: Math.floor(Math.random()*(3))-1};})
 	.sort(function(a, b) {return d3.descending(a.size, b.size);})
 	.slice(0,150)
 	console.log(leaders)
