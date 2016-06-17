@@ -7,108 +7,209 @@
     <style>
         html, body {
             height: 100%;
+            width:100%;
             margin: 0;
             padding: 0;
+            display: flex;
         }
 
         #map {
             height: 100%;
         }
+		
+		body {
+            font: 10px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .bar {
+            fill: orange;
+        }
+
+            .bar:hover {
+                fill: orangered;
+            }
+
+        .x.axis path {
+            display: none;
+        }
+
+        .d3-tip {
+            line-height: 1;
+            font-weight: bold;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 2px;
+        }
+
+            /* Creates a small triangle extender for the tooltip */
+            .d3-tip:after {
+                box-sizing: border-box;
+                display: inline;
+                font-size: 10px;
+                width: 100%;
+                line-height: 1;
+                color: rgba(0, 0, 0, 0.8);
+                content: "\25BC";
+                position: absolute;
+                text-align: center;
+            }
+
+            /* Style northward tooltips differently */
+            .d3-tip.n:after {
+                margin: -1px 0 0 0;
+                top: 100%;
+                left: 0;
+            }
+	
     </style>
 </head>
 <body>
-    <div id="map"></div>
+    <div id="map" style="width:75%"></div>
+    <div id="right" style="width:25%;flex:1;overflow-y:scroll;"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
     <script>
+		var d = new Date();
         var map;
         var parsedCSV
         var date = "22/3/14"
-        var hour = "14"
+        var hour = d.getHours()
         var footfall
         var charts = {}
 
 
+        locations = {
 
+            t1: {
+                //Changi Airport T1
+				name: "Changi Airport 1",
+                id: 12432,
+                center: { lat: 1.361228, lng: 103.990191 },
+            },
+
+            t2: {
+                //Changi Airport T2
+				name: "Changi Airport 2",
+                id: 23287,
+                center: { lat: 1.355032, lng: 103.988772 },
+            },
+
+            t3: {
+                //Changi Airport T3
+				name: "Changi Airport 3",
+                id: 16417,
+                center: { lat: 1.355692, lng: 103.985912 },
+            },
+
+            amk1: {
+                //AMK Hub
+				name: "Ang Mo Kio 1",
+                id: 17668,
+                center: { lat: 1.369228, lng: 103.847449 },
+            },
+
+            amk2: {
+                //YCK MRT
+				name: "Ang Mo Kio 2",
+                id: 11126,
+                center: { lat: 1.381947, lng: 103.844717 },
+            },
+
+            amk3: {
+                //CHIJ St Nicholas Girl's School
+				name: "Ang Mo Kio 3",
+                id: 16417,
+                center: { lat: 1.373891, lng: 103.834699 },
+            },
+
+            cbd1: {
+                //Marina bay sands
+				name: "CBD area 1",
+                id: 22496,
+                center: { lat: 1.2832, lng: 103.8603 },
+            },
+
+            cbd2: {
+                //NTUC Building
+				name: "CBD area 2",
+                id: 16430,
+                center: { lat: 1.282548, lng: 103.853012 },
+            },
+
+            cbd3: {
+                //Raffles City
+				name: "CBD area 3",
+                id: 2764,
+                center: { lat: 1.2939, lng: 103.8533 },
+            },
+
+            orchard1: {
+                //Orchard MRT / ION Orchard
+				name: "Orchard Road 1",
+                id: 22670,
+                center: { lat: 1.3039, lng: 103.8323 },
+            },
+
+            orchard2: {
+                //313@Somerset
+				name: "Orchard Road 2",
+                id: 13593,
+                center: { lat: 1.3010, lng: 103.8385 },
+            },
+
+            orchard3: {
+                //Tanglin Mall
+				name: "Orchard Road 3",
+                id: 4911,
+                center: { lat: 1.304946, lng: 103.823882 },
+            }
+        };
+
+        largeLocations = {
+            amk: {
+                id1: 17668,
+                id2: 11126,
+                id3: 16417,
+                center: { lat: 1.3691, lng: 103.8454}
+            },
+            
+            orchard: {
+                id1: 22670,
+                id2: 13593,
+                id3: 4911,
+                center: {lat: 1.304843, lng: 103.831822}
+            },
+
+            cbd: {
+                id1: 22496,
+                id2: 16430,
+                id3: 2764,
+                center: {lat: 1.279148, lng: 103.845340}
+            },
+
+            changi: {
+                id1: 12432,
+                id2: 23287,
+                id3: 16417,
+                center: { lat: 1.3644, lng: 103.9915}
+            }
+        };
         d3.csv("idackandataset1.csv", function (datasetText) {
             datasetText.forEach(function (d) {
                 d.hour = +d.hour
                 d.footfall = +d.footfall;
             })
 
-            locations = {
-
-                t1: {
-                    //Changi Airport T1
-                    id: 22496,
-                    center: { lat: 1.361228, lng: 103.990191 },
-                },
-
-                t2: {
-                    //Changi Airport T2
-                    id: 23287,
-                    center: { lat: 1.355032, lng: 103.988772 },
-                },
-
-                t3: {
-                    //Changi Airport T3
-                    id: 16417,
-                    center: { lat: 1.355692, lng: 103.985912 },
-                },
-
-                amk1: {
-                    //AMK Hub
-                    id: 17668,
-                    center: { lat: 1.369228, lng: 103.847449 },
-                },
-
-                amk2: {
-                    //YCK MRT
-                    id: 11126,
-                    center: { lat: 1.381947, lng: 103.844717 },
-                },
-
-                amk3: {
-                    //CHIJ St Nicholas Girl's School
-                    id: 16417,
-                    center: { lat: 1.373891, lng: 103.834699 },
-                },
-
-                cbd1: {
-                    //Marina bay sands
-                    id: 22496,
-                    center: { lat: 1.2832, lng: 103.8603 },
-                },
-
-                cbd2: {
-                    //NTUC Building
-                    id: 16430,
-                    center: { lat: 1.282548, lng: 103.853012 },
-                },
-
-                cbd3: {
-                    //Raffles City
-                    id: 2764,
-                    center: { lat: 1.2939, lng: 103.8533 },
-                },
-
-                orchard1: {
-                    //Orchard MRT / ION Orchard
-                    id: 22670,
-                    center: { lat: 1.3039, lng: 103.8323 },
-                },
-
-                orchard2: {
-                    //313@Somerset
-                    id: 13593,
-                    center: { lat: 1.3010, lng: 103.8385 },
-                },
-
-                orchard3: {
-                    //Tanglin Mall
-                    id: 4911,
-                    center: { lat: 1.304946, lng: 103.823882 },
-                }
-            };
+            
             parsedCSV = datasetText
         });
 
@@ -118,7 +219,7 @@
                     return d
             })
         }
-        function CenterControl(controlDiv, map) {
+        function CenterControl(controlDiv, map, infoWindow) {
 
             // Set CSS for the control border.
             var controlUI = document.createElement('div');
@@ -145,7 +246,9 @@
 
             // Setup the click event listeners: simply set the map to Chicago.
             controlUI.addEventListener('click', function () {
-                alert("Something");
+                map.setZoom(12)
+				map.setCenter({lat: 1.3521, lng: 103.8198})
+				infoWindow.close()
             });
 
         }
@@ -158,6 +261,54 @@
             });
             var infoWindow = new google.maps.InfoWindow();
             //Construct the circle for each value in footfall
+
+            for (var point in largeLocations) {
+                var color
+                var footfall = getFootfall(date, largeLocations[point].id1, hour)[0].footfall + getFootfall(date, largeLocations[point].id2, hour)[0].footfall + getFootfall(date, largeLocations[point].id3, hour)[0].footfall
+                if (footfall < 1000) {
+                    color = '#fee8c8'
+                }
+                else if (footfall > 1000 && footfall < 5000) {
+                    color = '#fdbb84'
+                }
+                else {
+                    color = '#e34a33'
+                }
+                //Add the location to the map
+                var cityCircle = new google.maps.Circle({
+                    //id: locations[point].id,
+                    strokeColor: color,
+                    fillColor: color,
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillOpacity: 0.75,
+                    map: map,
+                    center: largeLocations[point].center,
+                    radius: Math.sqrt(footfall) * 5,
+                    visible: true
+
+                })
+                
+                google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
+                    return function () {
+                        map.setZoom(15);
+                        map.setCenter(cityCircle.getCenter());
+                    }
+                })(cityCircle, point));
+
+                //Circles only appear when sufficiently zoomed out
+                map.addListener('zoom_changed', (function (cityCircle) {
+                    return function () {
+
+                        if (map.getZoom() <= 14) {
+                            cityCircle.setVisible(true);
+                        }
+                        if (map.getZoom() >= 15) {
+                            cityCircle.setVisible(false);
+                        }
+                    }
+                })(cityCircle));
+            }
 
             for (var point in locations) {
                 var color
@@ -173,7 +324,7 @@
                 }
                 //Add the location to the map
                 var cityCircle = new google.maps.Circle({
-                    id: locations[point].id,
+                    id: locations[point].name,
                     strokeColor: color,
                     fillColor: color,
                     strokeOpacity: 0.8,
@@ -181,14 +332,17 @@
                     fillOpacity: 0.75,
                     map: map,
                     center: locations[point].center,
-                    radius: Math.sqrt(footfall) * 5
-
+                    radius: Math.sqrt(footfall) * 5,
+					footfall: footfall,
+                    visible: false
 
                 })
                 //Graphic Code
 
                 //Prepare Axes
-                var margin = { top: 20, right: 20, bottom: 70, left: 100 },
+                var margin = { top: 20, right: 20, bottom: 70, left: 100 }
+                console.log($("#right").width())
+
                 width = 600 - margin.left - margin.right,
                 height = 300 - margin.top - margin.bottom;
 
@@ -204,14 +358,23 @@
                     .scale(y)
                     .orient("left")
 
+				var tip = d3.tip()
+				  .attr('class', 'd3-tip')
+				  .offset([-10, 0])
+				  .html(function (d) {
+					  return "<strong>Footfall:</strong> <span style='color:red'>" + d.footfall + "</span>";
+				  })	
                 //Create a SVG with previous parameters
-                var svg = d3.select(document.createElement("svg"))
+                var svg = d3.select("#right").append("svg")
+                //var svg = d3.select(document.createElement("svg"))
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
+                    .attr("display", "inline")
                   .append("g")
                     .attr("transform",
                           "translate(" + margin.left + "," + margin.top + ")");
 
+				svg.call(tip);
                 var filteredData = parsedCSV.filter(function (d, i) {
                     if (d["shape id"] == locations[point].id && d["day"] == date) {
                         return d
@@ -232,6 +395,11 @@
                     .attr("class", "x axis")
                     .attr("transform", "translate(0," + height + ")")
                     .call(xAxis)
+				   .append("text")
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end")
+                    .text("Hour")
                   .selectAll("text")
                     .style("text-anchor", "end")
                     .attr("dx", "-.8em")
@@ -264,26 +432,39 @@
                     .attr("x", function (d) { return x(d.hour); })
                     .attr("width", x.rangeBand())
                     .attr("y", function (d) { return y(d.footfall); })
-                    .attr("height", function (d) { return height - y(d.footfall); });
-
+                    .attr("height", function (d) { return height - y(d.footfall); })
+					.on('mouseover', tip.show)
+					.on('mouseout', tip.hide);
+					
                 locations[point].chart = svg.node().outerHTML
                 google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
                     return function () {
-                        //console.log(svg.node().outerHTML)
-                        //console.log(getFootfall(date, locations[point].id, hour)[0].footfall)
-                        infoWindow.setContent("<div id='info'><svg width='600' height='300'>" + locations[point].chart + "</div>");
+                        infoWindow.setContent("<div id='info'><h1>Current Footfall:" + cityCircle.footfall+ "<br>Current Location:"+ cityCircle.id +"</h1><svg width='600' height='300'>" + locations[point].chart + "</div>");
                         infoWindow.setPosition(cityCircle.getCenter());
                         infoWindow.open(map);
+                        console.log(this.filteredData)
+                        //$("#right").html("<div id='info'><svg width='600' height='300'>" + locations[point].chart + "</div>");
                     }
                 })(cityCircle, point));
-            }
 
+                //Circles only appear when sufficiently zoomed in
+                map.addListener('zoom_changed', (function (cityCircle) {
+                    return function () {
+                        if (map.getZoom() >= 15) {
+                            cityCircle.setVisible(true);
+                        }
+                        if (map.getZoom() <= 14) {
+                            cityCircle.setVisible(false);
+                        }
+                    }
+                })(cityCircle));
+            }
             // Construct your control in whatever manner is appropriate.
             // Generally, your constructor will want access to the
             // DIV on which you'll attach the control UI to the Map.
             var controlDiv = document.createElement('div');
 
-            var myControl = new CenterControl(controlDiv);
+            var myControl = new CenterControl(controlDiv, map, infoWindow);
 
             // We don't really need to set an index value here, but
             // this would be how you do it. Note that we set this
@@ -295,11 +476,15 @@
             // implicitly add the control to the DOM, through the Map
             // object. You should not attach the control manually.
             map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
-
+			
+			map.addListener('zoom_changed', (function(infoWindow) {
+				return function() {
+					if (map.getZoom() <= 14) {
+						infoWindow.close()
+					}
+				}
+			})(infoWindow));
         }
-
-
-
 
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZbiC6OYs1vcz-qlkVsiZZ-hrCS0bsfmo&callback=initMap"
