@@ -67,7 +67,6 @@
             width = 600 - margin.left - margin.right,
             height = 300 - margin.top - margin.bottom;
 
-		padding = 50;
         //Prepare Axes
         var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
 
@@ -89,8 +88,8 @@
           })
         //Create a SVG with previous parameters
         var svg = d3.select("body").append("svg")
-            .attr("width", "100%")
-            .attr("height", "100%")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
           .append("g")
             .attr("transform",
                   "translate(" + margin.left + "," + margin.top + ")");
@@ -120,18 +119,10 @@
             x.domain(filteredData.map(function (d) { return d.hour; }));
             y.domain([0, d3.max(filteredData, function (d) { return d.footfall; })]);
 
-			var xScale = d3.scale.ordinal()
-				.domain(flatData.map(xKey))
-				.rangeBands([padding, 100 - 2*padding]);
-
-			var yScale = d3.scale.linear()
-				.domain([0, d3.max(flatData, yKey)])
-				.range([100 - 2*padding, padding]);
-				
             //Creation of X axis
             svg.append("g")
                 .attr("class", "x axis")
-		.attr("transform", "translate(0,100% )")
+                .attr("transform", "translate(0," + height + ")")
                 .call(xAxis)
               .selectAll("text")
                 .style("text-anchor", "end")
@@ -162,10 +153,10 @@
                     }
                     return "#fee8c8";
                 })
-                .attr("x", function (d) { return xScale(d.footfall) + "%"; })
+                .attr("x", function (d) { return x(d.hour); })
                 .attr("width", x.rangeBand())
-                .attr("y", function (d) {  return yScale(d.footfall) + '%'; })
-                .attr("height", function (d) { return (yScale(0) - yScale(d.footfall)) + '%'; })
+                .attr("y", function (d) { return y(d.footfall); })
+                .attr("height", function (d) { return height - y(d.footfall); })
                 .on('mouseover', tip.show)
                 .on('mouseout', tip.hide);
         });
