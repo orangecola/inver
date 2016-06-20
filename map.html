@@ -84,7 +84,7 @@
         var date = "22/3/14"
         var hour = d.getHours()
         var footfall
-        var charts = {}
+        var charts = []
 
 
         locations = {
@@ -442,33 +442,33 @@
 					.on('mouseout', tip.hide);
 				
 				d3.select(window).on("resize", resized);
-
+				
+				charts.push({svg:svg, x:x, bars:bars})
 				  function resized() {
 
-					//new margin
-
+					for (var i=0; i < charts.length; i++) {
 					//Get the width of the window
 					var w = d3.select("#right").node().clientWidth;
 					console.log("resized", w);
 
 					//Change the width of the svg
-					d3.select("svg")
+					charts[i].svg
 					  .attr("width", w);
 					
-					x
+					charts[i].x
 					  .rangeRoundBands([0, w - margin.left - margin.right], .05);
 					  
-					bars
+					charts[i].bars
 						.attr("width", x.rangeBand())
 						.attr("x", function (d) { return x(d.hour); });
 
-					svg.select('.x.axis').call(xAxis)
+					charts[i].svg.select('.x.axis').call(xAxis)
 					.selectAll("text")
 							.style("text-anchor", "end")
 							.attr("dx", "-.8em")
 							.attr("dy", "-.55em")
 							.attr("transform", "rotate(-90)");
-					
+					}
 				  };
                 locations[point].chart = svg.node().outerHTML
                 google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
@@ -476,7 +476,6 @@
                         infoWindow.setContent("<div id='info'><h1>Current Footfall:" + cityCircle.footfall+ "<br>Current Location:"+ cityCircle.name +"</h1><svg width='600' height='300'>" + locations[point].chart + "</div>");
                         infoWindow.setPosition(cityCircle.getCenter());
                         infoWindow.open(map);
-                        console.log(this.filteredData)
 						$(".chart").css("display", "none")
 						//$("#"+point).siblings().css("display", "none")
 						$("#"+point).css("display", "inline")
