@@ -58,15 +58,24 @@
     </style>
 </head>
 <body>
+	<div class="g-chart"></div>
     <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
     <script type="text/javascript">
 
         //Set Margins for axes
         var margin = { top: 20, right: 20, bottom: 70, left: 50 },
-            width = 600 - margin.left - margin.right,
+            width = window.outerWidth - margin.left - margin.right,
             height = 300 - margin.top - margin.bottom;
 
+		//Create a SVG with previous parameters
+        var svg = d3.select(".g-chart").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform",
+                  "translate(" + margin.left + "," + margin.top + ")");
+		
         //Prepare Axes
         var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
 
@@ -86,13 +95,7 @@
           .html(function (d) {
               return "<strong>Footfall:</strong> <span style='color:red'>" + d.footfall + "</span>";
           })
-        //Create a SVG with previous parameters
-        var svg = d3.select("body").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-            .attr("transform",
-                  "translate(" + margin.left + "," + margin.top + ")");
+        
 
         svg.call(tip);
 
@@ -120,7 +123,7 @@
             y.domain([0, d3.max(filteredData, function (d) { return d.footfall; })]);
 
             //Creation of X axis
-            svg.append("g")
+            var xAxisGroup = svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis)
@@ -129,9 +132,10 @@
                 .attr("dx", "-.8em")
                 .attr("dy", "-.55em")
                 .attr("transform", "rotate(-90)");
+				
 
             //Creation of Y axis
-            svg.append("g")
+            var yAxisGroup = svg.append("g")
                 .attr("class", "y axis")
                 .call(yAxis)
               .append("text")
@@ -142,9 +146,10 @@
                 .text("Footfall");
 
             //Creation of bars
-            svg.selectAll("bar")
+            var categoryGroup = svg.selectAll("bar")
                 .data(filteredData)
-              .enter().append("rect")
+				.enter()
+            var bars =  categoryGroup.append("rect")
                 .attr("fill", function (d) {
                     if (d.footfall > 10000) {
                         return "#e34a33";
@@ -159,7 +164,39 @@
                 .attr("height", function (d) { return height - y(d.footfall); })
                 .on('mouseover', tip.show)
                 .on('mouseout', tip.hide);
-        });
+				
+		d3.select(window).on("resize", resized);
+
+	  function resized() {
+
+		//new margin
+
+		//Get the width of the window
+		var w = d3.select(".g-chart").node().clientWidth;
+		console.log("resized", w);
+
+		//Change the width of the svg
+		d3.select("svg")
+		  .attr("width", w);
+		
+		x
+		  .rangeRoundBands([0, w - margin.left - margin.right], .05);
+		  
+		bars
+			.attr("width", x.rangeBand())
+			.attr("x", function (d) { return x(d.hour); });
+
+		svg.select('.x.axis').call(xAxis)
+		.selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", "-.55em")
+                .attr("transform", "rotate(-90)");
+		
+	  };
+
+			
+	});
     </script>
 </body>
 </html>

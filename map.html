@@ -345,7 +345,7 @@
                 //Prepare Axes
                 var margin = { top: 20, right: 20, bottom: 70, left: 100 }
 
-                width = 600 - margin.left - margin.right,
+                width = $('#right').width() - margin.left - margin.right,
                 height = 300 - margin.top - margin.bottom;
 
                 var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
@@ -395,7 +395,7 @@
                 y.domain([0, d3.max(filteredData, function (d) { return d.footfall; })]);
 
                 //Creation of X axis
-                svg.append("g")
+                var xAxisGroup = svg.append("g")
                     .attr("class", "x axis")
                     .attr("transform", "translate(0," + height + ")")
                     .call(xAxis)
@@ -411,7 +411,7 @@
                     .attr("transform", "rotate(-90)");
 
                 //Creation of Y axis
-                svg.append("g")
+                var yAxisGroup = svg.append("g")
                     .attr("class", "y axis")
                     .call(yAxis)
                   .append("text")
@@ -422,9 +422,10 @@
                     .text("Footfall");
 
                 //Creation of bars
-                svg.selectAll("bar")
+                var categoryGroup = svg.selectAll("bar")
                     .data(filteredData)
-                    .enter().append("rect")
+                    .enter()
+				var bars = categoryGroup.append("rect")
                     .attr("fill", function (d) {
                         if (d.footfall > 5000) {
                             return "#e34a33";
@@ -439,7 +440,36 @@
                     .attr("height", function (d) { return height - y(d.footfall); })
 					.on('mouseover', tip.show)
 					.on('mouseout', tip.hide);
+				
+				d3.select(window).on("resize", resized);
+
+				  function resized() {
+
+					//new margin
+
+					//Get the width of the window
+					var w = d3.select("#right").node().clientWidth;
+					console.log("resized", w);
+
+					//Change the width of the svg
+					d3.select("svg")
+					  .attr("width", w);
 					
+					x
+					  .rangeRoundBands([0, w - margin.left - margin.right], .05);
+					  
+					bars
+						.attr("width", x.rangeBand())
+						.attr("x", function (d) { return x(d.hour); });
+
+					svg.select('.x.axis').call(xAxis)
+					.selectAll("text")
+							.style("text-anchor", "end")
+							.attr("dx", "-.8em")
+							.attr("dy", "-.55em")
+							.attr("transform", "rotate(-90)");
+					
+				  };
                 locations[point].chart = svg.node().outerHTML
                 google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
                     return function () {
