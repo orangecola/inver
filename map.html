@@ -14,6 +14,7 @@
     <div id="right" class="mdl-card mdl-shadow--4dp"style="width:40%;flex:1;overflow-y:scroll;">
 		<div id="title"></div>
 		<div id="charts"></div>
+		<div id="donut"></div>
 		<div class="mdl-card__actions mdl-card--border">
 			<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-button--accent" href="dashboard.html">Enter</a>
 		</div>
@@ -29,6 +30,7 @@
         var hour = d.getHours()
         var footfall
         var charts = []
+		
 
 
         locations = {
@@ -152,8 +154,12 @@
                 d.hour = +d.hour
                 d.footfall = +d.footfall;
             })
-
-            
+			d3.csv("datasets/idackandataset2.csv", function(text) {
+			
+				genderData = text.map(function(d) {return {shape_id:d.shape_id, gender_male:d.gender_male, gender_female:d.gender_female};})
+				
+			
+			})
             parsedCSV = datasetText
         });
 
@@ -256,7 +262,6 @@
             }
 
             for (var point in locations) {
-				console.log(point)
                 var color
                 var footfall = getFootfall(date, locations[point].id, hour)[0].footfall
                 if (footfall < 1000) {
@@ -333,7 +338,6 @@
                 filteredData.sort(function (a, b) {
                     return a.hour - b.hour;
                 })
-
                 //Set domains based on the data
                 x.domain(filteredData.map(function (d) { return d.hour; }));
                 y.domain([0, d3.max(filteredData, function (d) { return d.footfall; })]);
@@ -393,7 +397,6 @@
 					for (var i=0; i < charts.length; i++) {
 					//Get the width of the window
 					var w = d3.select("#charts").node().clientWidth;
-					console.log("resized", w);
 
 					//Change the width of the svg
 					charts[i].svg
@@ -427,6 +430,8 @@
                     }
                 })(cityCircle, point));
 
+				svg.call(tip);
+				
                 //Circles only appear when sufficiently zoomed in
                 map.addListener('zoom_changed', (function (cityCircle) {
                     return function () {
