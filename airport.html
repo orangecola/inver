@@ -1,0 +1,219 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A portfolio template that uses Material Design Lite.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>MDL-Static Website</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.grey-pink.min.css" />
+    <link rel="stylesheet" href="css/index.css" />
+
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	
+	<style>
+	html, body { height: 100%; padding: 0; margin: 0; }
+	.box { width: 50%; height: 50%; float: left; }
+	
+	.bar {
+	  fill: steelblue;
+	}
+
+	.bar:hover {
+	  fill: brown;
+	}
+
+	.axis {
+	  font: 10px sans-serif;
+	}
+
+	.axis path,
+	.axis line {
+	  fill: none;
+	  stroke: #000;
+	  shape-rendering: crispEdges;
+	}
+	
+	.axis path,
+	.axis line {
+	  fill: none;
+	  stroke: #000;
+	  shape-rendering: crispEdges;
+	}
+
+	.x.axis path {
+	  display: none;
+	}
+
+	.line {
+	  fill: none;
+	  stroke: steelblue;
+	  stroke-width: 1.5px;
+	}
+
+	
+	</style>
+	<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+
+<body>
+	<div id="div1" class="box">
+	</div>
+	<div id="div2" class="box">
+	</div>
+	<div id="div3" class="box">
+	</div>
+	<div id="div4" class="box">
+		<div class="mdl-card mdl-shadow--2dp mdl-cell--12-col">
+			<div class="mdl-card__title">
+				<h2 class="mdl-card__title-text">Events happening</h2>
+			</div>
+			<div class="mdl-card__supporting-text">
+			  The Sky Tower is an observation and telecommunications tower located in Auckland,
+			  New Zealand. It is 328 metres (1,076 ft) tall, making it the tallest man-made structure
+			  in the Southern Hemisphere.
+			</div>
+			<div class="mdl-card__actions">
+				<a href="http://en.wikipedia.org/wiki/Sky_Tower_%28Auckland%29">Wikipedia entry</a>
+			</div>
+		</div>
+	</div>
+		
+	<script type="text/javascript">
+		var margin = {top: 20, right: 20, bottom: 30, left: 60},
+		width = 600 - margin.left - margin.right,
+		height = 300 - margin.top - margin.bottom;
+		
+
+		
+	var formatmonth = d3.time.format("%Y-%m");
+
+	var x = d3.time.scale()
+		.range([0, width]);
+
+	var y = d3.scale.linear()
+		.range([height, 0]);
+
+	var xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom");
+
+	var yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left");
+
+	var line = d3.svg.line()
+		.x(function(d) { return x(d.month); })
+		.y(function(d) { return y(d.total_international_visitor_arrivals); });
+
+	var svg = d3.select("#div1").append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+	  .append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	//Top 5 svg
+        var svg2 = d3.select("#div3").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform",
+                  "translate(" + margin.left + "," + margin.top + ")");
+		
+        //Prepare Axes
+        var x2 = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+        var y2 = d3.scale.linear().range([height, 0]);
+
+        var xAxis2 = d3.svg.axis()
+        .scale(x2)
+        .orient("bottom")
+
+        var yAxis2 = d3.svg.axis()
+            .scale(y2)
+            .orient("left")
+	
+	d3.csv("datasets/total-visitor-international-arrivals-monthly.csv", type, function(error, data) {
+	
+		console.log(data)
+	  x.domain(d3.extent(data, function(d) { return d.month; }));
+	  y.domain(d3.extent(data, function(d) { return d.total_international_visitor_arrivals; }));
+
+	  svg.append("g")
+		  .attr("class", "x axis")
+		  .attr("transform", "translate(0," + height + ")")
+		  .call(xAxis);
+
+	  svg.append("g")
+		  .attr("class", "y axis")
+		  .call(yAxis)
+		.append("text")
+		  .attr("transform", "rotate(-90)")
+		  .attr("y", 6)
+		  .attr("dy", ".71em")
+		  .style("text-anchor", "end")
+		  .text("Total International Visitor Arrivals");
+
+	  svg.append("path")
+		  .datum(data)
+		  .attr("class", "line")
+		  .attr("d", line);
+	
+		var test = data
+		.sort(function(a, b) {return d3.descending(a.total_international_visitor_arrivals, b.total_international_visitor_arrivals);})
+		.slice(0,5)
+		.sort(function(a, b) {return d3.ascending(a.month, b.month);})
+		.map(function (d) {return {month: d.month.getFullYear()+"-"+d.month.getMonth(), total_international_visitor_arrivals : d.total_international_visitor_arrivals};})
+		console.log(test)
+		
+		x2.domain(test.map(function (d) { return d.month; }));
+		y2.domain([0, d3.max(test, function (d) { return d.total_international_visitor_arrivals; })]);
+		
+		//Creation of X axis
+            var xAxisGroup = svg2.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis2)
+              .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "1.5em")
+                .attr("dy", "1em")
+                
+            //Creation of Y axis
+            var yAxisGroup = svg2.append("g")
+                .attr("class", "y axis")
+                .call(yAxis2)
+              .append("text")
+                .attr("y", 6)
+				.attr("dx", "10em")
+                .attr("dy", "-1em")
+                .style("text-anchor", "end")
+                .text("Total International Visitor Arrivals");
+
+            //Creation of bars
+			svg2.selectAll("bar")
+                .data(test)
+				.enter().append("rect")
+                .attr("fill", "steelblue")
+                .attr("x", function (d) { return x2(d.month); })
+                .attr("width", x2.rangeBand())
+                .attr("y", function (d) { return y2(d.total_international_visitor_arrivals); })
+                .attr("height", function (d) { return height - y2(d.total_international_visitor_arrivals); })
+
+	});
+
+	
+	function type(d) {
+	  d.month = formatmonth.parse(d.month);
+	  d.total_international_visitor_arrivals = +d.total_international_visitor_arrivals;
+	  return d;
+	}
+	</script>	
+    <script src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+</body>
+
+</html>
