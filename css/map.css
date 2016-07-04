@@ -1,0 +1,64 @@
+html, body {
+            height: 100%;
+            width:100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+			overflow-x: hidden;
+        }
+
+        #map {
+            height: 100%;
+        }
+		
+		#charts{
+            font: 12px sans-serif !important;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .bar {
+            fill: orange;
+        }
+
+            .bar:hover {
+                fill: orangered;
+            }
+
+        .x.axis path {
+            display: none;
+        }
+
+        .d3-tip {
+            line-height: 1 !important;
+            font-weight: bold !important;
+            padding: 12px !important;
+            background: rgba(0, 0, 0, 0.8) !important;
+            color: #fff !important;
+            border-radius: 2px !important;
+        }
+
+            /* Creates a small triangle extender for the tooltip */
+            .d3-tip:after {
+                box-sizing: border-box !important;
+                display: inline !important;
+                font-size: 10px !important;
+                width: 100% !important;
+                line-height: 1 !important;
+                color: rgba(0, 0, 0, 0.8) !important;
+                content: "\25BC" !important;
+                position: absolute !important;
+                text-align: center !important;
+            }
+
+            /* Style northward tooltips differently */
+            .d3-tip.n:after {
+                margin: -1px 0 0 0 !important;
+                top: 100% !important;
+                left: 0 !important;
+            }

@@ -100,7 +100,7 @@
         svg.call(tip);
 
         //Load the data
-        d3.csv("idackandataset1.csv", function (datasetText) {
+        d3.csv("datasets/idackandataset1.csv", function (datasetText) {
             //Filter informaiton from the specified date + Location
             var filteredData = datasetText.filter(function (d, i) {
                 if (d["shape id"] == 13593 && d["day"] == "22/3/14") {

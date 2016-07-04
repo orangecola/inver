@@ -13,7 +13,7 @@ var color = d3.scale.threshold()
   .domain(color_domain)
   .range(["#F15854", "#FAA43A", "#60BD68"])
 
-d3.csv("SacramentocrimeJanuary2006.csv", function (datasetText) {
+d3.csv("datasets/SacramentocrimeJanuary2006.csv", function (datasetText) {
 	
 	var maxId = 0;
 	for (var i = 0; i < datasetText.length; i++) {

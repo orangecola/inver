@@ -4,76 +4,20 @@
     <title>Simple Map</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
-    <style>
-        html, body {
-            height: 100%;
-            width:100%;
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
-
-        #map {
-            height: 100%;
-        }
-		
-		body {
-            font: 10px sans-serif;
-        }
-
-        .axis path,
-        .axis line {
-            fill: none;
-            stroke: #000;
-            shape-rendering: crispEdges;
-        }
-
-        .bar {
-            fill: orange;
-        }
-
-            .bar:hover {
-                fill: orangered;
-            }
-
-        .x.axis path {
-            display: none;
-        }
-
-        .d3-tip {
-            line-height: 1;
-            font-weight: bold;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            border-radius: 2px;
-        }
-
-            /* Creates a small triangle extender for the tooltip */
-            .d3-tip:after {
-                box-sizing: border-box;
-                display: inline;
-                font-size: 10px;
-                width: 100%;
-                line-height: 1;
-                color: rgba(0, 0, 0, 0.8);
-                content: "\25BC";
-                position: absolute;
-                text-align: center;
-            }
-
-            /* Style northward tooltips differently */
-            .d3-tip.n:after {
-                margin: -1px 0 0 0;
-                top: 100%;
-                left: 0;
-            }
-	
-    </style>
+    
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.grey-pink.min.css" />
+	<link rel="stylesheet" href="css/map.css" />
 </head>
 <body>
-    <div id="map" style="width:75%"></div>
-    <div id="right" style="width:25%;flex:1;overflow-y:scroll;"></div>
+    <div id="map" style="width:60%"></div>
+    <div id="right" class="mdl-card mdl-shadow--4dp"style="width:40%;flex:1;overflow-y:scroll;">
+		<div id="title"></div>
+		<div id="charts"></div>
+		<div class="mdl-card__actions mdl-card--border">
+			<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-button--accent" href="dashboard.html">Enter</a>
+		</div>
+	</div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
@@ -203,7 +147,7 @@
                 center: { lat: 1.3644, lng: 103.9915}
             }
         };
-        d3.csv("idackandataset1.csv", function (datasetText) {
+        d3.csv("datasets/idackandataset1.csv", function (datasetText) {
             datasetText.forEach(function (d) {
                 d.hour = +d.hour
                 d.footfall = +d.footfall;
@@ -345,7 +289,7 @@
                 //Prepare Axes
                 var margin = { top: 20, right: 20, bottom: 70, left: 100 }
 
-                width = $('#right').width() - margin.left - margin.right,
+                width = $('#charts').width() - margin.left - margin.right,
                 height = 300 - margin.top - margin.bottom;
 
                 var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
@@ -367,7 +311,7 @@
 					  return "<strong>Footfall:</strong> <span style='color:red'>" + d.footfall + "</span>";
 				  })	
                 //Create a SVG with previous parameters
-                var svg = d3.select("#right").append("svg")
+                var svg = d3.select("#charts").append("svg")
                 //var svg = d3.select(document.createElement("svg"))
 					.attr("class", "chart")
                     .attr("width", width + margin.left + margin.right)
@@ -448,7 +392,7 @@
 
 					for (var i=0; i < charts.length; i++) {
 					//Get the width of the window
-					var w = d3.select("#right").node().clientWidth;
+					var w = d3.select("#charts").node().clientWidth;
 					console.log("resized", w);
 
 					//Change the width of the svg
@@ -473,13 +417,13 @@
                 locations[point].chart = svg.node().outerHTML
                 google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
                     return function () {
-                        infoWindow.setContent("<div id='info'><h1>Current Footfall:" + cityCircle.footfall+ "<br>Current Location:"+ cityCircle.name +"</h1><svg width='600' height='300'>" + locations[point].chart + "</div>");
+                        infoWindow.setContent("<div id='info'><p>Current Footfall:" + cityCircle.footfall+ "<br>Current Location:"+ cityCircle.name +"</p>");
                         infoWindow.setPosition(cityCircle.getCenter());
                         infoWindow.open(map);
+						$("#title").text("")
+						$("#title").append("<h2>" + cityCircle.name + "</h2>")
 						$(".chart").css("display", "none")
-						//$("#"+point).siblings().css("display", "none")
 						$("#"+point).css("display", "inline")
-                        //$("#right").html("<div id='info'><svg width='600' height='300'>" + locations[point].chart + "</div>");
                     }
                 })(cityCircle, point));
 
@@ -518,6 +462,7 @@
 					if (map.getZoom() <= 14) {
 						infoWindow.close()
 						$(".chart").css("display", "none")
+						$("#title").text("")
 					}
 				}
 			})(infoWindow));
