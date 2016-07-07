@@ -17,7 +17,7 @@
 	
 	<style>
 	html, body { height: 100%; padding: 0; margin: 0; }
-	.box { width: 50%; height: 50%; float: left; }
+	.box { width: 49%; height: 49%; float: left; border-width:1px; border-style:solid;}
 	
 	.bar {
 	  fill: steelblue;
@@ -51,7 +51,7 @@
 
 	.line {
 	  fill: none;
-	  stroke: steelblue;
+	  stroke: green;
 	  stroke-width: 1.5px;
 	}
 
@@ -62,23 +62,49 @@
 
 <body>
 	<div id="div1" class="box">
+		<div class="mdl-card__title">
+				<h2 class="mdl-card__title-text">Visitor Arrivals By Month</h2>
+		</div>
 	</div>
 	<div id="div2" class="box">
+		<div class="mdl-card__title">
+				<h2 class="mdl-card__title-text">Visitor Arrivals By Year (Top 20)</h2>
+		</div>
 	</div>
 	<div id="div3" class="box">
+		<div class="mdl-card__title">
+				<h2 class="mdl-card__title-text">Top 5 Visitor Arrivals By Month</h2>
+		</div>
 	</div>
 	<div id="div4" class="box">
 		<div class="mdl-card mdl-shadow--2dp mdl-cell--12-col">
 			<div class="mdl-card__title">
 				<h2 class="mdl-card__title-text">Events happening</h2>
 			</div>
+			
 			<div class="mdl-card__supporting-text">
-			  The Sky Tower is an observation and telecommunications tower located in Auckland,
-			  New Zealand. It is 328 metres (1,076 ft) tall, making it the tallest man-made structure
-			  in the Southern Hemisphere.
+			<h3 class="mdl-card__title-text">June 2013</h3>
+			Great Singapore Sale 2013
 			</div>
-			<div class="mdl-card__actions">
-				<a href="http://en.wikipedia.org/wiki/Sky_Tower_%28Auckland%29">Wikipedia entry</a>
+
+			<div class="mdl-card__supporting-text">
+			<h3 class="mdl-card__title-text">July 2013</h3>
+			Great Singapore Sale 2013
+			</div>
+			
+			<div class="mdl-card__supporting-text">
+			<h3 class="mdl-card__title-text">June 2014</h3>
+			Great Singapore Sale 2014
+			</div>
+			
+			<div class="mdl-card__supporting-text">
+			<h3 class="mdl-card__title-text">June 2015</h3>
+			Great Singapore Sale 2015
+			</div>
+			
+			<div class="mdl-card__supporting-text">
+			<h3 class="mdl-card__title-text">July 2015</h3>
+			Great Singapore Sale 2015
 			</div>
 		</div>
 	</div>
@@ -89,9 +115,18 @@
 		height = 300 - margin.top - margin.bottom;
 		
 
+	var width3 = 600,
+		height3 = 450,
+		radius = Math.min(width3, height3) / 2;	
+
+	var color = d3.scale.category20();
+
+	var arc = d3.svg.arc()
+		.outerRadius(radius - 40)
+		.innerRadius(radius - 100);	
 		
 	var formatmonth = d3.time.format("%Y-%m");
-
+	var groupId = [];
 	var x = d3.time.scale()
 		.range([0, width]);
 
@@ -110,6 +145,10 @@
 		.x(function(d) { return x(d.month); })
 		.y(function(d) { return y(d.total_international_visitor_arrivals); });
 
+	var pie = d3.layout.pie()
+		.sort(null)
+		.value(function(d) { return d.count; });
+	
 	var svg = d3.select("#div1").append("svg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
@@ -136,6 +175,12 @@
         var yAxis2 = d3.svg.axis()
             .scale(y2)
             .orient("left")
+	
+	var svg3 = d3.select("#div2").append("svg")
+		.attr("width", width3)
+		.attr("height", height3)
+	  .append("g")
+		.attr("transform", "translate(" + (width / 2 + 60) + "," + (height / 2 + 60) + ")");
 	
 	d3.csv("datasets/total-visitor-international-arrivals-monthly.csv", type, function(error, data) {
 	
@@ -203,7 +248,53 @@
                 .attr("width", x2.rangeBand())
                 .attr("y", function (d) { return y2(d.total_international_visitor_arrivals); })
                 .attr("height", function (d) { return height - y2(d.total_international_visitor_arrivals); })
+				
+		
+		var maxId = 0;
+		for (var i = 0; i < data.length; i++) {
+			var item = data[i];
+			
+			var exists = false;
+			
+			for (var z = 0; z < groupId.length; z++) {
+				if (groupId[z].year == item.month.getFullYear()) {
+						exists = true;
+						break;
+				}
+			}
+			
+			if (exists) {
+				groupId[z].count++;
+				groupId[z].objects.push(item);
+				groupId[z].count += item.total_international_visitor_arrivals;
+				}
+			else {
+				groupId.push({year : item.month.getFullYear(), count : 0, objects: []})
+				groupId[(groupId.length-1)].objects.push(item)
+				groupId[(groupId.length-1)].count += item.total_international_visitor_arrivals;
+			}
+		}
+			var leaders = groupId
+		.map(function(d) {return { text: d.year, count:d.count, objects:d};})
+		.sort(function(a, b) {return d3.descending(a.size, b.size);})
+		.slice(0,20)
+		.sort(function(a, b) {return d3.ascending(a.size, b.size);})
+		console.log(leaders)
 
+		var g = svg3.selectAll(".arc")
+		  .data(pie(leaders))
+		.enter().append("g")
+		  .attr("class", "arc");
+
+		g.append("path")
+			.attr("d", arc)
+			.style("fill", function(d) { return color(d.data.count); });
+
+		g.append("text")
+			.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+			.attr("dy", ".35em")
+			.attr("dx", "-1em")
+			.text(function(d) { return d.data.text; });
 	});
 
 	
@@ -212,6 +303,8 @@
 	  d.total_international_visitor_arrivals = +d.total_international_visitor_arrivals;
 	  return d;
 	}
+	
+	
 	</script>	
     <script src="https://code.getmdl.io/1.1.3/material.min.js"></script>
 </body>

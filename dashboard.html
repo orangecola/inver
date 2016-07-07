@@ -50,43 +50,41 @@
 	<script src="http://d3js.org/queue.v1.min.js"></script>
     <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
       <header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
-        <div class="mdl-layout__header-row">
-          <span class="mdl-layout-title">Home</span>
-          <div class="mdl-layout-spacer"></div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-            <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
-              <i class="material-icons">search</i>
-            </label>
-            <div class="mdl-textfield__expandable-holder">
-              <input class="mdl-textfield__input" type="text" id="search">
-              <label class="mdl-textfield__label" for="search">Enter your query...</label>
-            </div>
-          </div>
-          <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
-            <i class="material-icons">more_vert</i> 
-          </button>
-          <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right" for="hdrbtn">
-            <li class="mdl-menu__item">About</li>
-            <li class="mdl-menu__item">Contact</li>
-            <li class="mdl-menu__item">Legal information</li>
-          </ul>
-        </div>
-      </header>
-      <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
-        <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">home</i>Home</a>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">inbox</i>Inbox</a>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">delete</i>Trash</a>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">report</i>Spam</a>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">forum</i>Forums</a>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">flag</i>Updates</a>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">local_offer</i>Promos</a>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">shopping_cart</i>Purchases</a>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">people</i>Social</a>
-        </nav>
-      </div>
-      <main class="mdl-layout__content mdl-color--grey-100">
-        <div class="mdl-grid demo-content">
+        <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+		  <!-- Tab Bars -->
+		  <div class="mdl-tabs__tab-bar">
+			  <a href="#asia-panel" class="mdl-tabs__tab is-active">Tweets</a>
+			  <a href="#europe-panel" class="mdl-tabs__tab">Topics</a>
+			  <a href="#america-panel" class="mdl-tabs__tab">Sentiments</a>
+			  <a href="#summary-panel" class="mdl-tabs__tab">Summary</a>
+		  </div>
+
+  <!-- MDL tab panels, is-active to denote currently active -->
+  <div class="mdl-tabs__panel is-active" id="asia-panel">
+    <ul>
+      <li>India</li>
+      <li>China</li>
+      <li>Japan</li>
+      <li>Indonesia</li>
+      <li>Pakistan</li>
+      <li>Saudi Arabia</li>
+      <li>Nepal</li>
+    </ul>
+  </div>
+  
+  <!-- MDL Tab panel 2 -->
+  <div class="mdl-tabs__panel" id="europe-panel">
+    <ul>
+      <li>England</li>
+      <li>France</li>
+      <li>Germany</li>
+      <li>Spain</li>
+    </ul>
+  </div>
+  
+  <!-- MDL Tab panel 3 -->
+  <div class="mdl-tabs__panel" id="america-panel">
+    <div class="mdl-grid demo-content">
           <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
             <p>Something</p>
 			<p>Something</p>
@@ -97,8 +95,26 @@
             </div>
             </div>
         </div>
-      </main>
+  </div>
+  
+</div>
+      </header>
+      <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
+        <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
+          <a class="mdl-navigation__link" href="">#hashtag1</a>
+		  <a class="mdl-navigation__link" href="">#sso2k16</a>
+		  <a class="mdl-navigation__link" href="">#marinabaysands</a>
+		  <a class="mdl-navigation__link" href="">#idaddi</a>
+		  <a class="mdl-navigation__link" href="">#daas</a>
+        </nav>
+      </div>
+      <div class="mdl-layout__content mdl-color--grey-100">
+		
+	  
+        
+      </div>
     </div>
+	
     <script>
 		queue()
 			.defer(d3.json, '#BugisJunction 2016-06-17 17-16-15.json')
