@@ -8,7 +8,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
 		<title>Twitter Dashboard</title>
 		
-	
+		
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 		<link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.cyan-light_blue.min.css">
@@ -39,6 +39,26 @@
 			td {
 			word-wrap: break-word;
 			}
+			
+			.bar--positive {
+			  fill: steelblue;
+			}
+
+			.bar--negative {
+			  fill: darkorange;
+			}
+
+			.axis text {
+			  font: 10px sans-serif;
+			}
+
+			.axis path,
+			.axis line {
+			  fill: none;
+			  stroke: #000;
+			  shape-rendering: crispEdges;
+			}
+			
 		</style>
 	</head>
 	<body>
@@ -58,7 +78,7 @@
 					
 					<!-- MDL tab panels, is-active to denote currently active -->
 					<div class="mdl-tabs__panel is-active" id="tweets-panel">
-					
+						
 					</div>
 					
 					<!-- MDL Tab panel 2 -->
@@ -242,19 +262,14 @@
 					<!-- MDL Tab panel 4 -->
 					<div class="mdl-tabs__panel" id="summary-panel">
 						<div class="mdl-grid demo-content summary">
-							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
-								<h5>Top 5 Hashtags by Frequency 1 Graph Diagram</h5>
-								<svg height="500" width="500"></svg>
+							<div class = "demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col summaryDiagram">
+								<h5>Top 5 Hashtags by Frequency</h5>
 							</div>
-							<div class="mdl-cell--4-col">
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>Top 5 Positive word cloud</h5>
-									<svg height="200" width="500"></svg>
+							<div class="mdl-cell--4-col summarySidebar">
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col summaryPositive">
 								</div>
-								
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>Top 5 Negative word cloud</h5>
-									<svg height="200" width="500"></svg>
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col summaryNegative">
+
 								</div>
 							</div>
 						</div>
@@ -270,6 +285,74 @@
 		</div>
 		
 		<script>
+			
+			var summaryDiagram = {
+				margin: {top: 20, right: 30, bottom: 40, left: 30},
+			}
+			
+			//Summary Diagram setup
+			summaryDiagram.width = 600 - summaryDiagram.margin.left - summaryDiagram.margin.right
+			summaryDiagram.height = 500 - summaryDiagram.margin.top - summaryDiagram.margin.bottom
+			summaryDiagram.x = d3.scale.linear().range([0, summaryDiagram.width])
+			summaryDiagram.y = d3.scale.ordinal().rangeRoundBands([0, summaryDiagram.height], 0.1)
+			summaryDiagram.xAxis = d3.svg.axis()
+			  .scale(summaryDiagram.x)
+			  .orient("bottom")
+			summaryDiagram.yAxis = d3.svg.axis()
+			  .scale(summaryDiagram.y)
+			  .orient("left")
+			  .tickSize(0)
+			  .tickPadding(6)
+			  
+			summaryDiagram.svg = d3.select(".summaryDiagram").append("svg")
+			  .attr("width", summaryDiagram.width + summaryDiagram.margin.left + summaryDiagram.margin.right)
+			  .attr("height", summaryDiagram.height + summaryDiagram.margin.top + summaryDiagram.margin.bottom)
+			 .append("g")
+			  .attr("transform", "translate(" + summaryDiagram.margin.left + "," + summaryDiagram.margin.top + ")")
+			console.log(summaryDiagram)
+			var hashtag = [
+			{
+				className: "._313somerset",
+				displayName: "#313@somerset",
+				displayParameter : "_313somerset"
+			},
+			{
+				className: ".angmokio",
+				displayName: "#angmokio",
+				displayParameter: "angmokio"
+			},
+			{
+				className: ".adventurecove",
+				displayName: "#adventurecove",
+				displayParameter: "adventurecove"
+			},
+			{
+				className: ".changi",
+				displayName: "#changi",
+				displayParameter: "changi"
+			},
+			{
+				className: ".marinabay",
+				displayName: "#marinabay",
+				displayParameter: "marinabay"
+			},
+			{
+				className: ".sentosa",
+				displayName: "#sentosa",
+				displayParameter: "sentosa"
+			},
+			{
+				className: ".suntec",
+				displayName: "#suntec",
+				displayParameter: "suntec"
+			},
+			{
+				className: ".sunteccity",
+				displayName: "#sunteccity",
+				displayParameter: "sunteccity"
+			},
+			]
+			
 			queue()
 			.defer(d3.json, 'datasets/hashtag/313@somerset.json')
 			.defer(d3.json, 'datasets/hashtag/angmokio.json')
@@ -284,51 +367,8 @@
 			.awaitAll(parseData);
 			
 			function parseData(error, result)  {
-				
-				var hashtag = [
-				{
-					className: "._313somerset",
-					displayName: "#313@somerset",
-					displayParameter : "_313somerset"
-				},
-				{
-					className: ".angmokio",
-					displayName: "#angmokio",
-					displayParameter: "angmokio"
-				},
-				{
-					className: ".adventurecove",
-					displayName: "#adventurecove",
-					displayParameter: "adventurecove"
-				},
-				{
-					className: ".changi",
-					displayName: "#changi",
-					displayParameter: "changi"
-				},
-				{
-					className: ".marinabay",
-					displayName: "#marinabay",
-					displayParameter: "marinabay"
-				},
-				{
-					className: ".sentosa",
-					displayName: "#sentosa",
-					displayParameter: "sentosa"
-				},
-				{
-					className: ".suntec",
-					displayName: "#suntec",
-					displayParameter: "suntec"
-				},
-				{
-					className: ".sunteccity",
-					displayName: "#sunteccity",
-					displayParameter: "sunteccity"
-				},
-				]
-				
-				
+			
+
 				
 				for (var i=0; i < result.length - 1; i++) {
 					result[i].className = hashtag[i].className
@@ -345,20 +385,78 @@
 					$('#tweets-panel > ' + hashtag[i].className).append('<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--4-col tweetDetails"></div>')
 					$('#tweets-panel > ' + hashtag[i].className + ' > .tweets').append('<h5>' + hashtag[i].displayName + ' Tweets</h5>')
 					$('#tweets-panel > ' + hashtag[i].className + ' > .tweets').css('height',$(window).height() - $('.mdl-tabs__tab-bar').height()-33)
-
+					
+					//Tweet Panel Information Filling out
 					var selection = d3.select("#tweets-panel > " + hashtag[i].className + " > .tweets").selectAll("p")
 					.data(result[i].tweet)
 					.enter()
 					.append("p")
 					.html(function(d) { return "Tweet ID:" + d[0].TweetID+"<br>"+d[0].Tweet;})
 					.on("click", details)
+					
 				}
+				
+				//Adding name of key inside the daya
+				for (var key in result[result.length-1]) {
+						result[result.length-1][key].name = key
+				}
+				
+				//Summary Diagram
+				var summaryArray = valuesToArray(result[result.length-1])
+				console.log(summaryArray)
+				$('.summary').css("display", "flex");
+				$('.summaryDiagram').css('height',$(window).height() - $('.mdl-tabs__tab-bar').height()-33)
+				summaryDiagram.x.domain(d3.extent(summaryArray, function(d) { return d.Average_Score}))
+				summaryDiagram.y.domain(summaryArray.map(function(d){return d.name}))
+				
+				summaryDiagram.svg.selectAll(".bar")
+				  .data(summaryArray)
+				.enter().append("rect")
+				  .attr("class", function(d) { return "bar bar--" + (d.Average_Score < 0 ? "negative" : "positive"); })
+				  .attr("x", function(d) { return summaryDiagram.x(Math.min(0, d.Average_Score)); })
+				  .attr("y", function(d) { return summaryDiagram.y(d.name); })
+				  .attr("width", function(d) { return Math.abs(summaryDiagram.x(d.Average_Score) - summaryDiagram.x(0)); })
+				  .attr("height", summaryDiagram.y.rangeBand())
+				  .on("click", displaySummary)
+
+				summaryDiagram.svg.append("g")
+				  .attr("class", "x axis")
+				  .attr("transform", "translate(0," + summaryDiagram.height + ")")
+				  .call(summaryDiagram.xAxis);
+
+				summaryDiagram.svg.append("g")
+				  .attr("class", "y axis")
+				  .attr("transform", "translate(" + summaryDiagram.x(0) + ",0)")
+				  .call(summaryDiagram.yAxis);
+				
+			}
+			
+			function displaySummary(d) {
+				var result = "<h5>" + d.name + "Top 5 Positive words</h5>"
+				result += "<ul>"
+				for (var i=0; i < d.Top_5_Positive_Words.length; i++) {
+				result += "<li>" + d.Top_5_Positive_Words[i][0]+ "</li>"
+				}
+				result += "</ul>"
+				$(".summaryPositive").html(result)
+			
+				var result = "<h5>" + d.name + "Top 5 Negative words</h5>"
+				result += "<ul>"
+				for (var i=0; i < d.Top_5_Negative_Words.length; i++) {
+				result += "<li>" + d.Top_5_Negative_Words[i][0]+ "</li>"
+				}
+				result += "</ul>"
+				$(".summaryNegative").html(result)
 			}
 			
 			function display(hashtag) {
 				$(".mdl-tabs__panel" ).children().css( "display", "none" );
 				$("."+hashtag).css("display", "flex");
 				$(".summary").css("display", "flex");
+			}
+			
+			function valuesToArray(obj) {
+				return Object.keys(obj).map(function (key) { return obj[key]; });
 			}
 			
 			function details(d) {
@@ -405,17 +503,16 @@
 				result +="</td>"
 				result += "<td>" 
 				for (var i = 0; i < d[0].Negative_Words_Used.length; i++) {
-				result += d[0].Negative_Words_Used[i]+ "<br>"
+					result += d[0].Negative_Words_Used[i]+ "<br>"
 				}
 				result +="</td>"
 				result += "</tr>"
 				result += "</table>"
 				$("#tweets-panel > " + d[0].className + " > .tweetDetails").html(result)
-				}
-				
-
-				</script>  
-				<script src="https://code.getmdl.io/1.1.3/material.min.js"></script>
-				</body>
-				</html>
-								
+			}
+			
+			
+		</script>  
+		<script src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+	</body>
+</html>
