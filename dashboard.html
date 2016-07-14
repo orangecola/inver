@@ -41,22 +41,22 @@
 			}
 			
 			.bar--positive {
-			  fill: steelblue;
+			fill: steelblue;
 			}
-
+			
 			.bar--negative {
-			  fill: darkorange;
+			fill: darkorange;
 			}
-
+			
 			.axis text {
-			  font: 10px sans-serif;
+			font: 10px sans-serif;
 			}
-
+			
 			.axis path,
 			.axis line {
-			  fill: none;
-			  stroke: #000;
-			  shape-rendering: crispEdges;
+			fill: none;
+			stroke: #000;
+			shape-rendering: crispEdges;
 			}
 			
 		</style>
@@ -64,6 +64,7 @@
 	<body>
 		<script src="http://d3js.org/d3.v3.min.js"></script>
 		<script src="http://d3js.org/queue.v1.min.js"></script>
+		<script src="js/d3.layout.cloud.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 		<div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
 			<header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
@@ -83,91 +84,7 @@
 					
 					<!-- MDL Tab panel 2 -->
 					<div class="mdl-tabs__panel" id="topics-panel">
-						<div class="mdl-grid demo-content _313somerset">
-							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
-								<h5>#313@somerset Topic Diagram</h5>
-								<svg height="500" width="500"></svg>
-							</div>
-							<div class="mdl-cell--4-col">
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#313@somerset Positive word cloud</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-								
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#313@somerset Negative word cloud</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-							</div>
-						</div>
-						<div class="mdl-grid demo-content sso2k16">
-							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
-								<h5>#sso2k16 Topic Diagram</h5>
-								<svg height="500" width="500"></svg>
-							</div>
-							<div class="mdl-cell--4-col">
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#sso2k16 Positive word cloud</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-								
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#sso2k16 Negative word cloud</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-							</div>
-						</div>
-						<div class="mdl-grid demo-content marinabaysands">
-							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
-								<h5>#marinabaysands Topic Diagram</h5>
-								<svg height="500" width="500"></svg>
-							</div>
-							<div class="mdl-cell--4-col">
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#marinabaysands Positive word cloud</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-								
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#marinabaysands Negative word cloud</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-							</div>
-						</div>
-						<div class="mdl-grid demo-content idaddi">
-							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
-								<h5>#idaddi Topic Diagram</h5>
-								<svg height="500" width="500"></svg>
-							</div>
-							<div class="mdl-cell--4-col">
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#idaddi Positive word cloud</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-								
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#idaddi Negative word cloud</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-							</div>
-						</div>
-						<div class="mdl-grid demo-content daas">
-							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
-								<h5>#daas Topic Diagram</h5>
-								<svg height="500" width="500"></svg>
-							</div>
-							<div class="mdl-cell--4-col">
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#daas Positive word cloud</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-								
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#daas Negative word cloud</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-							</div>
-						</div>
+
 					</div>
 					
 					<!-- MDL Tab panel 3 -->
@@ -269,7 +186,7 @@
 								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col summaryPositive">
 								</div>
 								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col summaryNegative">
-
+									
 								</div>
 							</div>
 						</div>
@@ -296,20 +213,19 @@
 			summaryDiagram.x = d3.scale.linear().range([0, summaryDiagram.width])
 			summaryDiagram.y = d3.scale.ordinal().rangeRoundBands([0, summaryDiagram.height], 0.1)
 			summaryDiagram.xAxis = d3.svg.axis()
-			  .scale(summaryDiagram.x)
-			  .orient("bottom")
+			.scale(summaryDiagram.x)
+			.orient("bottom")
 			summaryDiagram.yAxis = d3.svg.axis()
-			  .scale(summaryDiagram.y)
-			  .orient("left")
-			  .tickSize(0)
-			  .tickPadding(6)
-			  
+			.scale(summaryDiagram.y)
+			.orient("left")
+			.tickSize(0)
+			.tickPadding(6)
+			
 			summaryDiagram.svg = d3.select(".summaryDiagram").append("svg")
-			  .attr("width", summaryDiagram.width + summaryDiagram.margin.left + summaryDiagram.margin.right)
-			  .attr("height", summaryDiagram.height + summaryDiagram.margin.top + summaryDiagram.margin.bottom)
-			 .append("g")
-			  .attr("transform", "translate(" + summaryDiagram.margin.left + "," + summaryDiagram.margin.top + ")")
-			console.log(summaryDiagram)
+			.attr("width", summaryDiagram.width + summaryDiagram.margin.left + summaryDiagram.margin.right)
+			.attr("height", summaryDiagram.height + summaryDiagram.margin.top + summaryDiagram.margin.bottom)
+			.append("g")
+			.attr("transform", "translate(" + summaryDiagram.margin.left + "," + summaryDiagram.margin.top + ")")
 			var hashtag = [
 			{
 				className: "._313somerset",
@@ -367,15 +283,17 @@
 			.awaitAll(parseData);
 			
 			function parseData(error, result)  {
-			
-
+				
+				
 				
 				for (var i=0; i < result.length - 1; i++) {
 					result[i].className = hashtag[i].className
 					for (var j=0; j < result[i].tweet.length; j++) {
 						result[i].tweet[j][0].className = hashtag[i].className
 					}
-					
+					for (var j=0; j < result[i].topics.length; j++) {
+						result[i].topics[j][0].className = hashtag[i].className
+					}
 					//Adding of Navigation bar links
 					$('.demo-navigation').append("<a class='mdl-navigation__link' onclick=display('" + hashtag[i].displayParameter + "')>"+ hashtag[i].displayName+"</a>")
 					
@@ -386,64 +304,114 @@
 					$('#tweets-panel > ' + hashtag[i].className + ' > .tweets').append('<h5>' + hashtag[i].displayName + ' Tweets</h5>')
 					$('#tweets-panel > ' + hashtag[i].className + ' > .tweets').css('height',$(window).height() - $('.mdl-tabs__tab-bar').height()-33)
 					
-					//Tweet Panel Information Filling out
+					//Adding of Topic Panel Information
+					$('#topics-panel').append('<div class="mdl-grid demo-content ' + hashtag[i].displayParameter + '"></div>')
+					$('#topics-panel > ' + hashtag[i].className).append('<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col topics"></div>')
+					$('#topics-panel > ' + hashtag[i].className).append('<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--4-col topicDetails"></div>')
+					$('#topics-panel > ' + hashtag[i].className + ' > .topics').append('<h5>' + hashtag[i].displayName + ' tweet topics</h5>')
+					$('#topics-panel > ' + hashtag[i].className + ' > .topics').css('height',$(window).height() - $('.mdl-tabs__tab-bar').height()-33)
+					$('#topics-panel > ' + hashtag[i].className + ' > .topicDetails').css('height',$(window).height() - $('.mdl-tabs__tab-bar').height()-33)
+					
+					//Filling out tweet panel
 					var selection = d3.select("#tweets-panel > " + hashtag[i].className + " > .tweets").selectAll("p")
 					.data(result[i].tweet)
 					.enter()
 					.append("p")
 					.html(function(d) { return "Tweet ID:" + d[0].TweetID+"<br>"+d[0].Tweet;})
-					.on("click", details)
+					.on("click", tweetDetails)
+					
+					//Filling out topic panel
+					var topicDiagram = {
+						width: 600,
+						height: 600,
+						countScale: d3.scale.linear().range([20, 70]),
+					}
+					
+					topicDiagram.topics = result[i].topics
+					
+					.map(function(d){ return {text: d[0].Topic_Name, size: d[0].Number_of_Tweets, className: d[0].className, tweets: d[0].Tweets, svgWidth: topicDiagram.width, svgHeight: topicDiagram.height, fill: d3.scale.category20()}})
+					.sort(function(a, b) {return d3.descending(a.size, b.size);})
+					.slice(0,20)
+					topicDiagram.countScale.domain([d3.min(topicDiagram.topics, function(d) {return d.size;}), d3.max(topicDiagram.topics, function(d){return d.size;})])
+					d3.layout.cloud().size([topicDiagram.width, topicDiagram.height])
+					.words(topicDiagram.topics)
+					.padding(0)
+					.font("Impact")
+					.fontSize(function(d) {return topicDiagram.countScale(d.size);})
+					.on("end", drawTopics)
+					.start()
 					
 				}
 				
 				//Adding name of key inside the daya
 				for (var key in result[result.length-1]) {
-						result[result.length-1][key].name = key
+					result[result.length-1][key].name = key
 				}
 				
 				//Summary Diagram
 				var summaryArray = valuesToArray(result[result.length-1])
-				console.log(summaryArray)
 				$('.summary').css("display", "flex");
 				$('.summaryDiagram').css('height',$(window).height() - $('.mdl-tabs__tab-bar').height()-33)
 				summaryDiagram.x.domain(d3.extent(summaryArray, function(d) { return d.Average_Score}))
 				summaryDiagram.y.domain(summaryArray.map(function(d){return d.name}))
 				
 				summaryDiagram.svg.selectAll(".bar")
-				  .data(summaryArray)
+				.data(summaryArray)
 				.enter().append("rect")
-				  .attr("class", function(d) { return "bar bar--" + (d.Average_Score < 0 ? "negative" : "positive"); })
-				  .attr("x", function(d) { return summaryDiagram.x(Math.min(0, d.Average_Score)); })
-				  .attr("y", function(d) { return summaryDiagram.y(d.name); })
-				  .attr("width", function(d) { return Math.abs(summaryDiagram.x(d.Average_Score) - summaryDiagram.x(0)); })
-				  .attr("height", summaryDiagram.y.rangeBand())
-				  .on("click", displaySummary)
-
+				.attr("class", function(d) { return "bar bar--" + (d.Average_Score < 0 ? "negative" : "positive"); })
+				.attr("x", function(d) { return summaryDiagram.x(Math.min(0, d.Average_Score)); })
+				.attr("y", function(d) { return summaryDiagram.y(d.name); })
+				.attr("width", function(d) { return Math.abs(summaryDiagram.x(d.Average_Score) - summaryDiagram.x(0)); })
+				.attr("height", summaryDiagram.y.rangeBand())
+				.on("click", displaySummary)
+				
 				summaryDiagram.svg.append("g")
-				  .attr("class", "x axis")
-				  .attr("transform", "translate(0," + summaryDiagram.height + ")")
-				  .call(summaryDiagram.xAxis);
-
+				.attr("class", "x axis")
+				.attr("transform", "translate(0," + summaryDiagram.height + ")")
+				.call(summaryDiagram.xAxis);
+				
 				summaryDiagram.svg.append("g")
-				  .attr("class", "y axis")
-				  .attr("transform", "translate(" + summaryDiagram.x(0) + ",0)")
-				  .call(summaryDiagram.yAxis);
+				.attr("class", "y axis")
+				.attr("transform", "translate(" + summaryDiagram.x(0) + ",0)")
+				.call(summaryDiagram.yAxis);
 				
 			}
 			
+			function drawTopics(words) {				
+				d3.select('#topics-panel > ' + words[0].className + " > .topics").append("svg")
+					.attr("width", words[0].svgWidth)
+					.attr("height", words[0].svgHeight)
+					.append("g")
+					.attr("transform", "translate("+ (words[0].svgWidth/2) + "," + (words[0].svgWidth/2) + ")")
+					.selectAll("text")
+					.data(words)
+					.enter().append("text")
+					.style("font-size", function(d) { return d.size + "px"; })
+					.style("font-family", "Impact")
+					.style("fill", function(d, i) { return words[0].fill(i); })
+					.attr("text-anchor", "middle")
+					.attr("transform", function(d) {
+						return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+					})
+					.text(function(d) { return d.text; })
+					.on("click", topicDetails)
+			}
+			
+			
+			
 			function displaySummary(d) {
-				var result = "<h5>" + d.name + "Top 5 Positive words</h5>"
+				var result = "<h5>" + d.name + " Top 5 Positive words</h5>"
 				result += "<ul>"
 				for (var i=0; i < d.Top_5_Positive_Words.length; i++) {
-				result += "<li>" + d.Top_5_Positive_Words[i][0]+ "</li>"
+					result += "<li>" + d.Top_5_Positive_Words[i][0]+ "</li>"
 				}
 				result += "</ul>"
 				$(".summaryPositive").html(result)
-			
-				var result = "<h5>" + d.name + "Top 5 Negative words</h5>"
+				
+				var result = "<h5>" + d.name + " Top 5 Negative words</h5>"
 				result += "<ul>"
 				for (var i=0; i < d.Top_5_Negative_Words.length; i++) {
-				result += "<li>" + d.Top_5_Negative_Words[i][0]+ "</li>"
+					result += "<li>" + d.Top_5_Negative_Words[i][0]+ "</li>"
 				}
 				result += "</ul>"
 				$(".summaryNegative").html(result)
@@ -459,7 +427,16 @@
 				return Object.keys(obj).map(function (key) { return obj[key]; });
 			}
 			
-			function details(d) {
+			function topicDetails(d) {
+				var result = "<h5>Topic: "+ d.text + "</h5>"
+				for (var i=0; i < d.tweets.length; i++) {
+					result += "<p>" + d.tweets[i] + "</p>"
+				}
+				
+				$("#topics-panel > " + d.className + " > .topicDetails").html(result)
+			}
+			
+			function tweetDetails(d) {
 				var result = "<h5>Tweet "+ d[0].TweetID +" Details</h5>"
 				result += "<p>Date Created: " + d[0].Date_Created + "<br>"
 				result += "Topics: " + d[0].Topics + "<br>"
