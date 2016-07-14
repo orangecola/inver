@@ -1,132 +1,421 @@
 <!doctype html>
-<!--
-  Material Design Lite
-  Copyright 2015 Google Inc. All rights reserved.
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License
--->
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Material Design Lite</title>
-
-
-    <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
-    <!--
-    <link rel="canonical" href="http://www.example.com/">
-    -->
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-	<link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.cyan-light_blue.min.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <style>
-    #view-source {
-      position: fixed;
-      display: block;
-      right: 0;
-      bottom: 0;
-      margin-right: 40px;
-      margin-bottom: 40px;
-      z-index: 900;
-    }
-    </style>
-  </head>
-  <body>
-	<script src="http://d3js.org/d3.v3.min.js"></script>
-	<script src="http://d3js.org/queue.v1.min.js"></script>
-    <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
-      <header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
-        <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
-		  <!-- Tab Bars -->
-		  <div class="mdl-tabs__tab-bar">
-			  <a href="#asia-panel" class="mdl-tabs__tab is-active">Tweets</a>
-			  <a href="#europe-panel" class="mdl-tabs__tab">Topics</a>
-			  <a href="#america-panel" class="mdl-tabs__tab">Sentiments</a>
-			  <a href="#summary-panel" class="mdl-tabs__tab">Summary</a>
-		  </div>
-
-  <!-- MDL tab panels, is-active to denote currently active -->
-  <div class="mdl-tabs__panel is-active" id="asia-panel">
-    <ul>
-      <li>India</li>
-      <li>China</li>
-      <li>Japan</li>
-      <li>Indonesia</li>
-      <li>Pakistan</li>
-      <li>Saudi Arabia</li>
-      <li>Nepal</li>
-    </ul>
-  </div>
-  
-  <!-- MDL Tab panel 2 -->
-  <div class="mdl-tabs__panel" id="europe-panel">
-    <ul>
-      <li>England</li>
-      <li>France</li>
-      <li>Germany</li>
-      <li>Spain</li>
-    </ul>
-  </div>
-  
-  <!-- MDL Tab panel 3 -->
-  <div class="mdl-tabs__panel" id="america-panel">
-    <div class="mdl-grid demo-content">
-          <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
-            <p>Something</p>
-			<p>Something</p>
-          </div>
-          <div class="demo-cards mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet mdl-grid mdl-grid--no-spacing">
-            <div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--12-col-desktop">
-              
-            </div>
-            </div>
-        </div>
-  </div>
-  
-</div>
-      </header>
-      <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
-        <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
-          <a class="mdl-navigation__link" href="">#hashtag1</a>
-		  <a class="mdl-navigation__link" href="">#sso2k16</a>
-		  <a class="mdl-navigation__link" href="">#marinabaysands</a>
-		  <a class="mdl-navigation__link" href="">#idaddi</a>
-		  <a class="mdl-navigation__link" href="">#daas</a>
-        </nav>
-      </div>
-      <div class="mdl-layout__content mdl-color--grey-100">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+		<title>Twitter Dashboard</title>
 		
-	  
-        
-      </div>
-    </div>
 	
-    <script>
-		queue()
-			.defer(d3.json, '#BugisJunction 2016-06-17 17-16-15.json')
-			.defer(d3.json, '#bugisstreet 2016-06-17 17-16-18.json')
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.cyan-light_blue.min.css">
+		<link rel="stylesheet" href="css/dashboard.css">
+		<style>
+			#view-source {
+			position: fixed;
+			display: block;
+			right: 0;
+			bottom: 0;
+			margin-right: 40px;
+			margin-bottom: 40px;
+			z-index: 900;
+			}
+			
+			.demo-content:not(._313somerset) {
+			display: none;
+			}
+			
+			.demo-content > div {
+			overflow: scroll;
+			}
+			
+			table {
+			table-layout: fixed;
+			}
+			
+			td {
+			word-wrap: break-word;
+			}
+		</style>
+	</head>
+	<body>
+		<script src="http://d3js.org/d3.v3.min.js"></script>
+		<script src="http://d3js.org/queue.v1.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+		<div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+			<header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
+				<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+					<!-- Tab Bars -->
+					<div class="mdl-tabs__tab-bar">
+						<a href="#tweets-panel" class="mdl-tabs__tab is-active">Tweets</a>
+						<a href="#topics-panel" class="mdl-tabs__tab">Topics</a>
+						<a href="#sentiments-panel" class="mdl-tabs__tab">Sentiments</a>
+						<a href="#summary-panel" class="mdl-tabs__tab">Summary</a>
+					</div>
+					
+					<!-- MDL tab panels, is-active to denote currently active -->
+					<div class="mdl-tabs__panel is-active" id="tweets-panel">
+					
+					</div>
+					
+					<!-- MDL Tab panel 2 -->
+					<div class="mdl-tabs__panel" id="topics-panel">
+						<div class="mdl-grid demo-content _313somerset">
+							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+								<h5>#313@somerset Topic Diagram</h5>
+								<svg height="500" width="500"></svg>
+							</div>
+							<div class="mdl-cell--4-col">
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#313@somerset Positive word cloud</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+								
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#313@somerset Negative word cloud</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+							</div>
+						</div>
+						<div class="mdl-grid demo-content sso2k16">
+							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+								<h5>#sso2k16 Topic Diagram</h5>
+								<svg height="500" width="500"></svg>
+							</div>
+							<div class="mdl-cell--4-col">
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#sso2k16 Positive word cloud</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+								
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#sso2k16 Negative word cloud</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+							</div>
+						</div>
+						<div class="mdl-grid demo-content marinabaysands">
+							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+								<h5>#marinabaysands Topic Diagram</h5>
+								<svg height="500" width="500"></svg>
+							</div>
+							<div class="mdl-cell--4-col">
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#marinabaysands Positive word cloud</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+								
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#marinabaysands Negative word cloud</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+							</div>
+						</div>
+						<div class="mdl-grid demo-content idaddi">
+							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+								<h5>#idaddi Topic Diagram</h5>
+								<svg height="500" width="500"></svg>
+							</div>
+							<div class="mdl-cell--4-col">
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#idaddi Positive word cloud</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+								
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#idaddi Negative word cloud</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+							</div>
+						</div>
+						<div class="mdl-grid demo-content daas">
+							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+								<h5>#daas Topic Diagram</h5>
+								<svg height="500" width="500"></svg>
+							</div>
+							<div class="mdl-cell--4-col">
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#daas Positive word cloud</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+								
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#daas Negative word cloud</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<!-- MDL Tab panel 3 -->
+					<div class="mdl-tabs__panel" id="sentiments-panel">
+						<div class="mdl-grid demo-content _313somerset">
+							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+								<h5>#313@somerset Topic Diagram</h5>
+								<svg height="500" width="500"></svg>
+							</div>
+							<div class="mdl-cell--4-col">
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#313@somerset Top 5 Positive words</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+								
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#313@somerset Top 5 Negative words</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+							</div>
+						</div>
+						<div class="mdl-grid demo-content sso2k16">
+							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+								<h5>#sso2k16 Topic Diagram</h5>
+								<svg height="500" width="500"></svg>
+							</div>
+							<div class="mdl-cell--4-col">
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#sso2k16 Top 5 Positive words</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+								
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#sso2k16 Top 5 Negative words</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+							</div>
+						</div>
+						<div class="mdl-grid demo-content marinabaysands">
+							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+								<h5>#marinabaysands Topic Diagram</h5>
+								<svg height="500" width="500"></svg>
+							</div>
+							<div class="mdl-cell--4-col">
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#marinabaysands Top 5 Positive words</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+								
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#marinabaysands Top 5 Negative words</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+							</div>
+						</div>
+						<div class="mdl-grid demo-content idaddi">
+							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+								<h5>#idaddi Topic Diagram</h5>
+								<svg height="500" width="500"></svg>
+							</div>
+							<div class="mdl-cell--4-col">
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#idaddi Top 5 Positive words</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+								
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#idaddi Top 5 Negative words</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+							</div>
+						</div>
+						<div class="mdl-grid demo-content daas">
+							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+								<h5>#daas Topic Diagram</h5>
+								<svg height="500" width="500"></svg>
+							</div>
+							<div class="mdl-cell--4-col">
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#daas Top 5 Positive words</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+								
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>#daas Top 5 Negative words</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<!-- MDL Tab panel 4 -->
+					<div class="mdl-tabs__panel" id="summary-panel">
+						<div class="mdl-grid demo-content summary">
+							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+								<h5>Top 5 Hashtags by Frequency 1 Graph Diagram</h5>
+								<svg height="500" width="500"></svg>
+							</div>
+							<div class="mdl-cell--4-col">
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>Top 5 Positive word cloud</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+								
+								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+									<h5>Top 5 Negative word cloud</h5>
+									<svg height="200" width="500"></svg>
+								</div>
+							</div>
+						</div>
+						
+					</div>
+					
+				</div>
+			</header>
+			<div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
+				<nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
+				</nav>
+			</div>
+		</div>
+		
+		<script>
+			queue()
+			.defer(d3.json, 'datasets/hashtag/313@somerset.json')
+			.defer(d3.json, 'datasets/hashtag/angmokio.json')
+			.defer(d3.json, 'datasets/hashtag/adventurecove.json')
+			.defer(d3.json, 'datasets/hashtag/Changi.json')
+			.defer(d3.json, 'datasets/hashtag/marinabay.json')
+			.defer(d3.json, 'datasets/hashtag/Sentosa.json')
+			.defer(d3.json, 'datasets/hashtag/suntec.json')
+			.defer(d3.json, 'datasets/hashtag/sunteccity.json')
+			
+			.defer(d3.json, 'datasets/summary/summaryJson.json')
 			.awaitAll(parseData);
 			
-		function parseData(error, bugisJunction, bugisStreet)  {
-				console.log(error)
-				console.log(bugisJunction)
-				console.log(bugisStreet)
-		}
-	</script>  
-    <script src="https://code.getmdl.io/1.1.3/material.min.js"></script>
-  </body>
-</html>
+			function parseData(error, result)  {
+				
+				var hashtag = [
+				{
+					className: "._313somerset",
+					displayName: "#313@somerset",
+					displayParameter : "_313somerset"
+				},
+				{
+					className: ".angmokio",
+					displayName: "#angmokio",
+					displayParameter: "angmokio"
+				},
+				{
+					className: ".adventurecove",
+					displayName: "#adventurecove",
+					displayParameter: "adventurecove"
+				},
+				{
+					className: ".changi",
+					displayName: "#changi",
+					displayParameter: "changi"
+				},
+				{
+					className: ".marinabay",
+					displayName: "#marinabay",
+					displayParameter: "marinabay"
+				},
+				{
+					className: ".sentosa",
+					displayName: "#sentosa",
+					displayParameter: "sentosa"
+				},
+				{
+					className: ".suntec",
+					displayName: "#suntec",
+					displayParameter: "suntec"
+				},
+				{
+					className: ".sunteccity",
+					displayName: "#sunteccity",
+					displayParameter: "sunteccity"
+				},
+				]
+				
+				
+				
+				for (var i=0; i < result.length - 1; i++) {
+					result[i].className = hashtag[i].className
+					for (var j=0; j < result[i].tweet.length; j++) {
+						result[i].tweet[j][0].className = hashtag[i].className
+					}
+					
+					//Adding of Navigation bar links
+					$('.demo-navigation').append("<a class='mdl-navigation__link' onclick=display('" + hashtag[i].displayParameter + "')>"+ hashtag[i].displayName+"</a>")
+					
+					//Adding of Tweet Panel Information
+					$('#tweets-panel').append('<div class="mdl-grid demo-content ' + hashtag[i].displayParameter + '"></div>')
+					$('#tweets-panel > ' + hashtag[i].className).append('<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col tweets"></div>')
+					$('#tweets-panel > ' + hashtag[i].className).append('<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--4-col tweetDetails"></div>')
+					$('#tweets-panel > ' + hashtag[i].className + ' > .tweets').append('<h5>' + hashtag[i].displayName + ' Tweets</h5>')
+					$('#tweets-panel > ' + hashtag[i].className + ' > .tweets').css('height',$(window).height() - $('.mdl-tabs__tab-bar').height()-33)
+
+					var selection = d3.select("#tweets-panel > " + hashtag[i].className + " > .tweets").selectAll("p")
+					.data(result[i].tweet)
+					.enter()
+					.append("p")
+					.html(function(d) { return "Tweet ID:" + d[0].TweetID+"<br>"+d[0].Tweet;})
+					.on("click", details)
+				}
+			}
+			
+			function display(hashtag) {
+				$(".mdl-tabs__panel" ).children().css( "display", "none" );
+				$("."+hashtag).css("display", "flex");
+				$(".summary").css("display", "flex");
+			}
+			
+			function details(d) {
+				var result = "<h5>Tweet "+ d[0].TweetID +" Details</h5>"
+				result += "<p>Date Created: " + d[0].Date_Created + "<br>"
+				result += "Topics: " + d[0].Topics + "<br>"
+				result += "Tweet: " + d[0].Tweet + "<br>"
+				result += "Sentiment: " + d[0].Sentiment + "</p>"
+				result += "<h5>Sentiment Analysis</h5>"
+				result += "<table border='1'>"
+				//Row 1
+				result += "<tr>"
+				result += "<td></td>"
+				result += "<th>Positive</th>"
+				result += "<th>Neutral</th>"
+				result += "<th>Negative</th>"
+				result += "</tr>"
+				//Row 2
+				result += "<tr>"
+				result += "<td>Sentiment Score</td>"
+				result += "<td>" + d[0].Positive_Sentiment_Score + "</td>"
+				result += "<td>NA</td>"
+				result += "<td>" + d[0].Negative_Sentiment_Score + "</td>"
+				result += "</tr>"
+				//Row 3
+				result += "<tr>"
+				result += "<td>Number of words used</td>"
+				result += "<td>" + d[0].Number_of_Postive_Words + "</td>"
+				result += "<td>" + d[0].Number_of_Neutral_Words + "</td>"
+				result += "<td>" + d[0].Number_of_Negative_Words + "</td>"
+				result += "</tr>"
+				//Row 4
+				result += "<tr>"
+				result += "<td>Words Used</td>"
+				result += "<td>" 
+				for (var i = 0; i < d[0].Positive_Words_Used.length; i++) {
+					result += d[0].Positive_Words_Used[i]+ "<br>"
+				}
+				result +="</td>"
+				result += "<td>" 
+				for (var i = 0; i < d[0].Neutral_Words_Used.length; i++) {
+					result += d[0].Neutral_Words_Used[i]+ "<br>"
+				}
+				result +="</td>"
+				result += "<td>" 
+				for (var i = 0; i < d[0].Negative_Words_Used.length; i++) {
+				result += d[0].Negative_Words_Used[i]+ "<br>"
+				}
+				result +="</td>"
+				result += "</tr>"
+				result += "</table>"
+				$("#tweets-panel > " + d[0].className + " > .tweetDetails").html(result)
+				}
+				
+
+				</script>  
+				<script src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+				</body>
+				</html>
+								
