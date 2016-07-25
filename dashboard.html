@@ -59,6 +59,18 @@
 			shape-rendering: crispEdges;
 			}
 			
+			
+			.dot {
+			  stroke: #000;
+			}
+
+			.tooltip {
+			  position: absolute;
+			  width: 200px;
+			  height: 28px;
+			  pointer-events: none;
+			}
+			
 		</style>
 	</head>
 	<body>
@@ -89,91 +101,7 @@
 					
 					<!-- MDL Tab panel 3 -->
 					<div class="mdl-tabs__panel" id="sentiments-panel">
-						<div class="mdl-grid demo-content _313somerset">
-							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
-								<h5>#313@somerset Topic Diagram</h5>
-								<svg height="500" width="500"></svg>
-							</div>
-							<div class="mdl-cell--4-col">
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#313@somerset Top 5 Positive words</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-								
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#313@somerset Top 5 Negative words</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-							</div>
-						</div>
-						<div class="mdl-grid demo-content sso2k16">
-							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
-								<h5>#sso2k16 Topic Diagram</h5>
-								<svg height="500" width="500"></svg>
-							</div>
-							<div class="mdl-cell--4-col">
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#sso2k16 Top 5 Positive words</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-								
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#sso2k16 Top 5 Negative words</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-							</div>
-						</div>
-						<div class="mdl-grid demo-content marinabaysands">
-							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
-								<h5>#marinabaysands Topic Diagram</h5>
-								<svg height="500" width="500"></svg>
-							</div>
-							<div class="mdl-cell--4-col">
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#marinabaysands Top 5 Positive words</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-								
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#marinabaysands Top 5 Negative words</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-							</div>
-						</div>
-						<div class="mdl-grid demo-content idaddi">
-							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
-								<h5>#idaddi Topic Diagram</h5>
-								<svg height="500" width="500"></svg>
-							</div>
-							<div class="mdl-cell--4-col">
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#idaddi Top 5 Positive words</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-								
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#idaddi Top 5 Negative words</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-							</div>
-						</div>
-						<div class="mdl-grid demo-content daas">
-							<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
-								<h5>#daas Topic Diagram</h5>
-								<svg height="500" width="500"></svg>
-							</div>
-							<div class="mdl-cell--4-col">
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#daas Top 5 Positive words</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-								
-								<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-									<h5>#daas Top 5 Negative words</h5>
-									<svg height="200" width="500"></svg>
-								</div>
-							</div>
-						</div>
+
 					</div>
 					
 					<!-- MDL Tab panel 4 -->
@@ -197,6 +125,14 @@
 			</header>
 			<div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
 				<nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
+					<a class="mdl-navigation__link" onclick="display('_313somerset')">#313@somerset</a>
+					<a class="mdl-navigation__link" onclick="display('angmokio')">#angmokio</a>
+					<a class="mdl-navigation__link" onclick="display('adventurecove')">#adventurecove</a>
+					<a class="mdl-navigation__link" onclick="display('changi')">#changi</a>
+					<a class="mdl-navigation__link" onclick="display('marinabay')">#marinabay</a>
+					<a class="mdl-navigation__link" onclick="display('sentosa')">#sentosa</a>
+					<a class="mdl-navigation__link" onclick="display('suntec')">#suntec</a>
+					<a class="mdl-navigation__link" onclick="display('sunteccity')">#sunteccity</a>
 				</nav>
 			</div>
 		</div>
@@ -284,16 +220,8 @@
 			
 			function parseData(error, result)  {
 				
-				
-				
-				for (var i=0; i < result.length - 1; i++) {
-					result[i].className = hashtag[i].className
-					for (var j=0; j < result[i].tweet.length; j++) {
-						result[i].tweet[j][0].className = hashtag[i].className
-					}
-					for (var j=0; j < result[i].topics.length; j++) {
-						result[i].topics[j][0].className = hashtag[i].className
-					}
+				console.log(result)
+									
 					//Adding of Navigation bar links
 					$('.demo-navigation').append("<a class='mdl-navigation__link' onclick=display('" + hashtag[i].displayParameter + "')>"+ hashtag[i].displayName+"</a>")
 					
@@ -312,6 +240,14 @@
 					$('#topics-panel > ' + hashtag[i].className + ' > .topics').css('height',$(window).height() - $('.mdl-tabs__tab-bar').height()-33)
 					$('#topics-panel > ' + hashtag[i].className + ' > .topicDetails').css('height',$(window).height() - $('.mdl-tabs__tab-bar').height()-33)
 					
+					//Adding of Sentiment Panel Information
+					$('#sentiments-panel').append('<div class="mdl-grid demo-content ' + hashtag[i].displayParameter + '"></div>')
+					$('#sentiments-panel > ' + hashtag[i].className).append('<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col sentiments"></div>')
+					$('#sentiments-panel > ' + hashtag[i].className).append('<div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--4-col sentimentDetails"></div>')
+					$('#sentiments-panel > ' + hashtag[i].className + ' > .sentiments').append('<h5>' + hashtag[i].displayName + ' tweet sentiments</h5>')
+					$('#sentiments-panel > ' + hashtag[i].className + ' > .sentiments').css('height',$(window).height() - $('.mdl-tabs__tab-bar').height()-33)
+
+									
 					//Filling out tweet panel
 					var selection = d3.select("#tweets-panel > " + hashtag[i].className + " > .tweets").selectAll("p")
 					.data(result[i].tweet)
@@ -339,11 +275,83 @@
 					.font("Impact")
 					.fontSize(function(d) {return topicDiagram.countScale(d.size);})
 					.on("end", drawTopics)
-					.start()
+					.start();
 					
+					//Filling out sentiment panel
+					var sentimentDiagram = {
+						margin: {top: 20, right: 20, bottom: 30, left: 40}
+					}
+					
+					sentimentDiagram.width = 600 - sentimentDiagram.margin.left - sentimentDiagram.margin.right
+					sentimentDiagram.height = 600 - sentimentDiagram.margin.top - sentimentDiagram.margin.bottom
+					
+					sentimentDiagram.xValue = function(d) { return d[0].Number_of_Tweets;}, // data -> value
+					sentimentDiagram.xScale = d3.scale.linear().range([0, sentimentDiagram.width]), // value -> display
+					sentimentDiagram.xMap = function(d) { return sentimentDiagram.xScale(sentimentDiagram.xValue(d));}, // data -> display
+					sentimentDiagram.xAxis = d3.svg.axis().scale(sentimentDiagram.xScale).orient("middle");
+					
+					
+					sentimentDiagram.yValue = function(d) { return d[0].Average_Score;}, // data -> value
+					sentimentDiagram.yScale = d3.scale.linear().range([sentimentDiagram.height, 0]), // value -> display
+					sentimentDiagram.yMap = function(d) { return sentimentDiagram.yScale(sentimentDiagram.yValue(d));}, // data -> display
+					sentimentDiagram.yAxis = d3.svg.axis().scale(sentimentDiagram.yScale).orient("left");
+					
+					sentimentDiagram.xScale.domain([d3.min(result[i].sentiment, sentimentDiagram.xValue), d3.max(result[i].sentiment, sentimentDiagram.xValue)])
+					sentimentDiagram.yScale.domain([d3.min(result[i].sentiment, sentimentDiagram.yValue), d3.max(result[i].sentiment, sentimentDiagram.yValue)])
+					
+					
+					sentimentDiagram.svg = d3.select('#sentiments-panel > ' + hashtag[i].className + " > .sentiments").append("svg")
+					.attr("width", sentimentDiagram.width + sentimentDiagram.margin.left + sentimentDiagram.margin.right)
+					.attr("height", sentimentDiagram.height + sentimentDiagram.margin.top + sentimentDiagram.margin.bottom)
+					.append("g")
+					.attr("transform", "translate(" + sentimentDiagram.margin.left + "," + sentimentDiagram.margin.top + ")");
+
+					
+					sentimentDiagram.svg.append("g")
+					  .attr("class", "x axis")
+					  .attr("transform", "translate(0," + sentimentDiagram.yScale(0) + ")")
+					  .call(sentimentDiagram.xAxis)
+					.append("text")
+					  .attr("class", "label")
+					  .attr("x", sentimentDiagram.width)
+					  .attr("y", -6)
+					  .style("text-anchor", "end")
+					  .text("Number of Tweets");
+					  
+					sentimentDiagram.svg.append("g")
+					  .attr("class", "y axis")
+					  .call(sentimentDiagram.yAxis)
+					.append("text")
+					  .attr("class", "label")
+					  .attr("transform", "rotate(-90)")
+					  .attr("y", 6)
+					  .attr("dy", ".71em")
+					  .style("text-anchor", "end")
+					  .text("Average Sentiment");
+					 
+					var g = sentimentDiagram.svg.selectAll(".dot")
+					  .data(result[i].sentiment)
+					  
+					 .enter().append("circle")
+					  .attr("class", "dot")
+					  .attr("r", 3.5)
+					  .attr("cx", sentimentDiagram.xMap)
+					  .attr("cy", sentimentDiagram.yMap)
+					  .style("fill", function (d){
+						  if (d[0].Sentiment == "Negative") {
+							return "#F15854";  
+						  }
+						  else if (d[0].Sentiment == "Neutral") {
+							return "#FAA43A";
+						  }
+						  else {
+							return "#60BD68"
+						  };
+						  })
+					  .on("click", sentimentDetails)  
 				}
 				
-				//Adding name of key inside the daya
+				//Adding name of key inside the data
 				for (var key in result[result.length-1]) {
 					result[result.length-1][key].name = key
 				}
@@ -376,6 +384,7 @@
 				.call(summaryDiagram.yAxis);
 				
 			}
+			
 			
 			function drawTopics(words) {				
 				d3.select('#topics-panel > ' + words[0].className + " > .topics").append("svg")
@@ -434,6 +443,52 @@
 				}
 				
 				$("#topics-panel > " + d.className + " > .topicDetails").html(result)
+			}
+			
+			function sentimentDetails(d) {
+				var result = "<h5>Topic: "+ d[0].Topic_Name + "</h5>"
+				result += "<p>Number of tweets: " + d[0].Number_of_Tweets + "<br>"
+				result += "Sentiment: " + d[0].Sentiment + "<br>"
+				
+				if (d[0].Top_5_Positive_Words.length != 0) {
+					result += "<h5>Top 5 Positive Words</h5>"
+					result += "<table border='1'>"
+					
+					//Row 1
+					result += "<tr>"
+					result += "<td>Word</td>"
+					result += "<td>Times Used</td>"
+					result += "</tr>"
+					
+					for (var i=0; i < d[0].Top_5_Positive_Words.length; i++) {
+						result += "<tr>"
+						result += "<td>" + d[0].Top_5_Positive_Words[i][0] + "</td>"
+						result += "<td>" + d[0].Top_5_Positive_Words[i][1] + "</td>"
+						result += "</tr>"
+					}
+					result += "</table>"
+				}
+				
+				if (d[0].Top_5_Negative_Words.length != 0) {
+					result += "<h5>Top 5 Negative Words</h5>"
+					result += "<table border='1'>"
+					
+					//Row 1
+					result += "<tr>"
+					result += "<td>Word</td>"
+					result += "<td>Times Used</td>"
+					result += "</tr>"
+					
+					for (var i=0; i < d[0].Top_5_Negative_Words.length; i++) {
+						result += "<tr>"
+						result += "<td>" + d[0].Top_5_Negative_Words[i][0] + "</td>"
+						result += "<td>" + d[0].Top_5_Negative_Words[i][1] + "</td>"
+						result += "</tr>"
+					}
+					result += "</table>"
+				}
+				
+				$('#sentiments-panel > ' + d[0].className + ' > .sentimentDetails').html(result)
 			}
 			
 			function tweetDetails(d) {
