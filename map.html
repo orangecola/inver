@@ -1,480 +1,659 @@
 ﻿<!DOCTYPE html>
 <html>
-<head>
-    <title>Simple Map</title>
-    <meta name="viewport" content="initial-scale=1.0">
-    <meta charset="utf-8">
-    
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.grey-pink.min.css" />
-	<link rel="stylesheet" href="css/map.css" />
-</head>
-<body>
-    <div id="map" style="width:60%"></div>
-    <div id="right" class="mdl-card mdl-shadow--4dp"style="width:40%;flex:1;overflow-y:scroll;">
-		<div id="title"></div>
-		<div id="charts"></div>
-		<div id="donut"></div>
-		<div class="mdl-card__actions mdl-card--border">
-			<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-button--accent" href="dashboard.html">Enter</a>
-		</div>
-	</div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-    <script>
-		var d = new Date();
-        var map;
-        var parsedCSV
-        var date = "22/3/14"
-        var hour = d.getHours()
-        var footfall
-        var charts = []
+	<head>
+		<title>Simple Map</title>
+		<meta name="viewport" content="initial-scale=1.0">
+		<meta charset="utf-8">
 		
-
-
-        locations = {
-
-            t1: {
-                //Changi Airport T1
-				name: "Changi Airport 1",
-                id: 12432,
-                center: { lat: 1.361228, lng: 103.990191 },
-            },
-
-            t2: {
-                //Changi Airport T2
-				name: "Changi Airport 2",
-                id: 23287,
-                center: { lat: 1.355032, lng: 103.988772 },
-            },
-
-            t3: {
-                //Changi Airport T3
-				name: "Changi Airport 3",
-                id: 16417,
-                center: { lat: 1.355692, lng: 103.985912 },
-            },
-
-            amk1: {
-                //AMK Hub
-				name: "Ang Mo Kio 1",
-                id: 17668,
-                center: { lat: 1.369228, lng: 103.847449 },
-            },
-
-            amk2: {
-                //YCK MRT
-				name: "Ang Mo Kio 2",
-                id: 11126,
-                center: { lat: 1.381947, lng: 103.844717 },
-            },
-
-            amk3: {
-                //CHIJ St Nicholas Girl's School
-				name: "Ang Mo Kio 3",
-                id: 16417,
-                center: { lat: 1.373891, lng: 103.834699 },
-            },
-
-            cbd1: {
-                //Marina bay sands
-				name: "CBD area 1",
-                id: 22496,
-                center: { lat: 1.2832, lng: 103.8603 },
-            },
-
-            cbd2: {
-                //NTUC Building
-				name: "CBD area 2",
-                id: 16430,
-                center: { lat: 1.282548, lng: 103.853012 },
-            },
-
-            cbd3: {
-                //Raffles City
-				name: "CBD area 3",
-                id: 2764,
-                center: { lat: 1.2939, lng: 103.8533 },
-            },
-
-            orchard1: {
-                //Orchard MRT / ION Orchard
-				name: "Orchard Road 1",
-                id: 22670,
-                center: { lat: 1.3039, lng: 103.8323 },
-            },
-
-            orchard2: {
-                //313@Somerset
-				name: "Orchard Road 2",
-                id: 13593,
-                center: { lat: 1.3010, lng: 103.8385 },
-            },
-
-            orchard3: {
-                //Tanglin Mall
-				name: "Orchard Road 3",
-                id: 4911,
-                center: { lat: 1.304946, lng: 103.823882 },
-            }
-        };
-
-        largeLocations = {
-            amk: {
-                id1: 17668,
-                id2: 11126,
-                id3: 16417,
-                center: { lat: 1.3691, lng: 103.8454}
-            },
-            
-            orchard: {
-                id1: 22670,
-                id2: 13593,
-                id3: 4911,
-                center: {lat: 1.304843, lng: 103.831822}
-            },
-
-            cbd: {
-                id1: 22496,
-                id2: 16430,
-                id3: 2764,
-                center: {lat: 1.279148, lng: 103.845340}
-            },
-
-            changi: {
-                id1: 12432,
-                id2: 23287,
-                id3: 16417,
-                center: { lat: 1.3644, lng: 103.9915}
-            }
-        };
-        d3.csv("datasets/idackandataset1.csv", function (datasetText) {
-            datasetText.forEach(function (d) {
-                d.hour = +d.hour
-                d.footfall = +d.footfall;
-            })
-			d3.csv("datasets/idackandataset2.csv", function(text) {
-			
-				genderData = text.map(function(d) {return {shape_id:d.shape_id, gender_male:d.gender_male, gender_female:d.gender_female};})
-				
-			
-			})
-            parsedCSV = datasetText
-        });
-
-        function getFootfall(date, id, hour) {
-            return parsedCSV.filter(function (d, i) {
-                if (d["shape id"] == id && d["day"] == date && d["hour"] == hour)
-                    return d
-            })
-        }
-        function CenterControl(controlDiv, map, infoWindow) {
-
-            // Set CSS for the control border.
-            var controlUI = document.createElement('div');
-            controlUI.style.backgroundColor = '#fff';
-            controlUI.style.border = '2px solid #fff';
-            controlUI.style.borderRadius = '3px';
-            controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
-            controlUI.style.cursor = 'pointer';
-            controlUI.style.margin = '10px';
-            controlUI.style.textAlign = 'center';
-            controlUI.title = 'Click to recenter the map';
-            controlDiv.appendChild(controlUI);
-
-            // Set CSS for the control interior.
-            var controlText = document.createElement('div');
-            controlText.style.color = 'rgb(25,25,25)';
-            controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
-            controlText.style.fontSize = '11px';
-            controlText.style.lineHeight = '38px';
-            controlText.style.paddingLeft = '8px';
-            controlText.style.paddingRight = '8px';
-            controlText.innerHTML = 'Back';
-            controlUI.appendChild(controlText);
-			
-			
-            controlUI.addEventListener('click', function () {
-                map.setZoom(12)
-				map.setCenter({lat: 1.3521, lng: 103.8198})
-				infoWindow.close()
-				$(".chart").css("display", "none")
-            });
-
-        }
-
-
-        function initMap() {
-            map = new google.maps.Map(document.getElementById('map'), {
-                center: { lat: 1.3521, lng: 103.8198 },
-                zoom: 12
-            });
-            var infoWindow = new google.maps.InfoWindow();
-            //Construct the circle for each value in footfall
-
-            for (var point in largeLocations) {
-                var color
-                var footfall = getFootfall(date, largeLocations[point].id1, hour)[0].footfall + getFootfall(date, largeLocations[point].id2, hour)[0].footfall + getFootfall(date, largeLocations[point].id3, hour)[0].footfall
-                if (footfall < 1000) {
-                    color = '#fee8c8'
-                }
-                else if (footfall > 1000 && footfall < 5000) {
-                    color = '#fdbb84'
-                }
-                else {
-                    color = '#e34a33'
-                }
-                //Add the location to the map
-                var cityCircle = new google.maps.Circle({
-                    //id: locations[point].id,
-                    strokeColor: color,
-                    fillColor: color,
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillOpacity: 0.75,
-                    map: map,
-                    center: largeLocations[point].center,
-                    radius: Math.sqrt(footfall) * 5,
-                    visible: true
-
-                })
-                
-                google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
-                    return function () {
-                        map.setZoom(15);
-                        map.setCenter(cityCircle.getCenter());
-                    }
-                })(cityCircle, point));
-
-                //Circles only appear when sufficiently zoomed out
-                map.addListener('zoom_changed', (function (cityCircle) {
-                    return function () {
-
-                        if (map.getZoom() <= 14) {
-                            cityCircle.setVisible(true);
-                        }
-                        if (map.getZoom() >= 15) {
-                            cityCircle.setVisible(false);
-                        }
-                    }
-                })(cityCircle));
-            }
-
-            for (var point in locations) {
-                var color
-                var footfall = getFootfall(date, locations[point].id, hour)[0].footfall
-                if (footfall < 1000) {
-                    color = '#fee8c8'
-                }
-                else if (footfall > 1000 && footfall < 5000) {
-                    color = '#fdbb84'
-                }
-                else {
-                    color = '#e34a33'
-                }
-                //Add the location to the map
-                var cityCircle = new google.maps.Circle({
-                    id: point,
-					name: locations[point].name,
-                    strokeColor: color,
-                    fillColor: color,
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillOpacity: 0.75,
-                    map: map,
-                    center: locations[point].center,
-                    radius: Math.sqrt(footfall) * 5,
-					footfall: footfall,
-                    visible: false
-
-                })
-                //Graphic Code
-
-                //Prepare Axes
-                var margin = { top: 20, right: 20, bottom: 70, left: 100 }
-
-                width = $('#charts').width() - margin.left - margin.right,
-                height = 300 - margin.top - margin.bottom;
-
-                var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
-
-                var y = d3.scale.linear().range([height, 0]);
-
-                var xAxis = d3.svg.axis()
-                .scale(x)
-                .orient("bottom")
-
-                var yAxis = d3.svg.axis()
-                    .scale(y)
-                    .orient("left")
-
-				var tip = d3.tip()
-				  .attr('class', 'd3-tip')
-				  .offset([-10, 0])
-				  .html(function (d) {
-					  return "<strong>Footfall:</strong> <span style='color:red'>" + d.footfall + "</span>";
-				  })	
-                //Create a SVG with previous parameters
-                var svg = d3.select("#charts").append("svg")
-                //var svg = d3.select(document.createElement("svg"))
-					.attr("class", "chart")
-                    .attr("width", width + margin.left + margin.right)
-                    .attr("height", height + margin.top + margin.bottom)
-                    .attr("style", "display: none")
-					.attr("id", point)
-                  .append("g")
-                    .attr("transform",
-                          "translate(" + margin.left + "," + margin.top + ")");
-
-				svg.call(tip);
-                var filteredData = parsedCSV.filter(function (d, i) {
-                    if (d["shape id"] == locations[point].id && d["day"] == date) {
-                        return d
-                    }
-                })
-
-                //Sort by hour
-                filteredData.sort(function (a, b) {
-                    return a.hour - b.hour;
-                })
-                //Set domains based on the data
-                x.domain(filteredData.map(function (d) { return d.hour; }));
-                y.domain([0, d3.max(filteredData, function (d) { return d.footfall; })]);
-
-                //Creation of X axis
-                var xAxisGroup = svg.append("g")
-                    .attr("class", "x axis")
-                    .attr("transform", "translate(0," + height + ")")
-                    .call(xAxis)
-				   .append("text")
-                    .attr("y", 6)
-                    .attr("dy", ".71em")
-                    .style("text-anchor", "end")
-                    .text("Hour")
-                  .selectAll("text")
-                    .style("text-anchor", "end")
-                    .attr("dx", "-.8em")
-                    .attr("dy", "-.55em")
-                    .attr("transform", "rotate(-90)");
-
-                //Creation of Y axis
-                var yAxisGroup = svg.append("g")
-                    .attr("class", "y axis")
-                    .call(yAxis)
-                  .append("text")
-                    .attr("transform", "rotate(-90)")
-                    .attr("y", 6)
-                    .attr("dy", ".71em")
-                    .style("text-anchor", "end")
-                    .text("Footfall");
-
-                //Creation of bars
-                var categoryGroup = svg.selectAll("bar")
-                    .data(filteredData)
-                    .enter()
-				var bars = categoryGroup.append("rect")
-                    .attr("fill", function (d) {
-                        if (d.footfall > 5000) {
-                            return "#e34a33";
-                        } else if (d.footfall > 1000) {
-                            return "#fdbb84";
-                        }
-                        return "#fee8c8";
-                    })
-                    .attr("x", function (d) { return x(d.hour); })
-                    .attr("width", x.rangeBand())
-                    .attr("y", function (d) { return y(d.footfall); })
-                    .attr("height", function (d) { return height - y(d.footfall); })
-					.on('mouseover', tip.show)
-					.on('mouseout', tip.hide);
-				
-				d3.select(window).on("resize", resized);
-				
-				charts.push({svg:svg, x:x, bars:bars})
-				  function resized() {
-
-					for (var i=0; i < charts.length; i++) {
-					//Get the width of the window
-					var w = d3.select("#charts").node().clientWidth;
-
-					//Change the width of the svg
-					charts[i].svg
-					  .attr("width", w);
-					
-					charts[i].x
-					  .rangeRoundBands([0, w - margin.left - margin.right], .05);
-					  
-					charts[i].bars
-						.attr("width", x.rangeBand())
-						.attr("x", function (d) { return x(d.hour); });
-
-					charts[i].svg.select('.x.axis').call(xAxis)
-					.selectAll("text")
-							.style("text-anchor", "end")
-							.attr("dx", "-.8em")
-							.attr("dy", "-.55em")
-							.attr("transform", "rotate(-90)");
-					}
-				  };
-                locations[point].chart = svg.node().outerHTML
-                google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
-                    return function () {
-                        infoWindow.setContent("<div id='info'><p>Current Footfall:" + cityCircle.footfall+ "<br>Current Location:"+ cityCircle.name +"</p>");
-                        infoWindow.setPosition(cityCircle.getCenter());
-                        infoWindow.open(map);
-						$("#title").text("")
-						$("#title").append("<h2>" + cityCircle.name + "</h2>")
-						$(".chart").css("display", "none")
-						$("#"+point).css("display", "inline")
-                    }
-                })(cityCircle, point));
-
-				svg.call(tip);
-				
-                //Circles only appear when sufficiently zoomed in
-                map.addListener('zoom_changed', (function (cityCircle) {
-                    return function () {
-                        if (map.getZoom() >= 15) {
-                            cityCircle.setVisible(true);
-                        }
-                        if (map.getZoom() <= 14) {
-                            cityCircle.setVisible(false);
-                        }
-                    }
-                })(cityCircle));
-            }
-            // Construct your control in whatever manner is appropriate.
-            // Generally, your constructor will want access to the
-            // DIV on which you'll attach the control UI to the Map.
-            var controlDiv = document.createElement('div');
-
-            var myControl = new CenterControl(controlDiv, map, infoWindow);
-
-            // We don't really need to set an index value here, but
-            // this would be how you do it. Note that we set this
-            // value as a property of the DIV itself.
-            controlDiv.index = 1;
-
-            // Add the control to the map at a designated control position
-            // by pushing it on the position's array. This code will
-            // implicitly add the control to the DOM, through the Map
-            // object. You should not attach the control manually.
-            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
-			
-			map.addListener('zoom_changed', (function(infoWindow) {
-				return function() {
-					if (map.getZoom() <= 14) {
-						infoWindow.close()
-						$(".chart").css("display", "none")
-						$("#title").text("")
-					}
-				}
-			})(infoWindow));
-        }
-
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZbiC6OYs1vcz-qlkVsiZZ-hrCS0bsfmo&callback=initMap"
-            async defer></script>
-</body>
-</html>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+		<link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.grey-pink.min.css" />
+		<link rel="stylesheet" href="css/map.css" />
+	</head>
+	<body>
+		<div id="map" style="width:60%"></div>
+		<div id="right" class="mdl-card mdl-shadow--4dp"style="width:40%;flex:1;overflow-y:scroll;">
+			<div id="title"></div>
+			<div class="mdl-card__actions mdl-card--border">
+				<div id="chart">Footfall Chart</div>
+				<div id="donut">
+					<div id="donutleft">left</div>
+					<div id="donutright">right</div>
+				</div>
+			</div>
+			<div class="mdl-card__actions mdl-card--border">
+				<div id="moreinfo">
+					<a class="airport mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-button--accent" href="airport.html">More Info</a>
+				</div>
+			</div>
+		</div>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+		<script src="http://d3js.org/queue.v1.min.js"></script>
+		<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+		<script>
+			var d = new Date();
+			var map;
+			var parsedCSV
+		var date = "22/3/14"
+		var hour = d.getHours()
+		var footfall
+		generated = false
+		
+		//Prepare Axes
+		chart.margin = { top: 20, right: 20, bottom: 70, left: 100 }
+		
+		chart.width = $('#chart').width() - chart.margin.left - chart.margin.right,
+		chart.height = 300 - chart.margin.top - chart.margin.bottom;
+		
+		chart.x = d3.scale.ordinal().rangeRoundBands([0, chart.width], .05);
+		
+		chart.y = d3.scale.linear().range([chart.height, 0]);
+		
+		chart.xAxis = d3.svg.axis()
+		.scale(chart.x)
+		.orient("bottom")
+		
+		chart.yAxis = d3.svg.axis()
+		.scale(chart.y)
+		.orient("left")
+		
+		chart.tip = d3.tip()
+		.attr('class', 'd3-tip')
+		.offset([-10, 0])
+		.html(function (d) {
+		return "<strong>Footfall:</strong> <span style='color:red'>" + d.footfall + "</span>";
+		})
+		
+		locations = {
+		
+		t1: {
+		//Changi Airport T1
+		name: "Changi Airport 1",
+		id: 12432,
+		center: { lat: 1.361228, lng: 103.990191 },
+		},
+		
+		t2: {
+		//Changi Airport T2
+		name: "Changi Airport 2",
+		id: 23287,
+		center: { lat: 1.355032, lng: 103.988772 },
+		},
+		
+		t3: {
+		//Changi Airport T3
+		name: "Changi Airport 3",
+		id: 16417,
+		center: { lat: 1.355692, lng: 103.985912 },
+		},
+		
+		amk1: {
+		//AMK Hub
+		name: "Ang Mo Kio 1",
+		id: 17668,
+		center: { lat: 1.369228, lng: 103.847449 },
+		},
+		
+		amk2: {
+		//YCK MRT
+		name: "Ang Mo Kio 2",
+		id: 11126,
+		center: { lat: 1.381947, lng: 103.844717 },
+		},
+		
+		amk3: {
+		//CHIJ St Nicholas Girl's School
+		name: "Ang Mo Kio 3",
+		id: 16417,
+		center: { lat: 1.373891, lng: 103.834699 },
+		},
+		
+		cbd1: {
+		//Marina bay sands
+		name: "CBD area 1",
+		id: 22496,
+		center: { lat: 1.2832, lng: 103.8603 },
+		},
+		
+		cbd2: {
+		//NTUC Building
+		name: "CBD area 2",
+		id: 16430,
+		center: { lat: 1.282548, lng: 103.853012 },
+		},
+		
+		cbd3: {
+		//Raffles City
+		name: "CBD area 3",
+		id: 2764,
+		center: { lat: 1.2939, lng: 103.8533 },
+		},
+		
+		orchard1: {
+		//Orchard MRT / ION Orchard
+		name: "Orchard Road 1",
+		id: 22670,
+		center: { lat: 1.3039, lng: 103.8323 },
+		},
+		
+		orchard2: {
+		//313@Somerset
+		name: "Orchard Road 2",
+		id: 13593,
+		center: { lat: 1.3010, lng: 103.8385 },
+		},
+		
+		orchard3: {
+		//Tanglin Mall
+		name: "Orchard Road 3",
+		id: 4911,
+		center: { lat: 1.304946, lng: 103.823882 },
+		}
+		};
+		
+		largeLocations = {
+		amk: {
+		id1: 17668,
+		id2: 11126,
+		id3: 16417,
+		center: { lat: 1.3691, lng: 103.8454},
+		class: "amk",
+		name: "Ang Mo Kio"
+		},
+		
+		orchard: {
+		id1: 22670,
+		id2: 13593,
+		id3: 4911,
+		center: {lat: 1.304843, lng: 103.831822},
+		class: "orchard",
+		name: "Orchard"
+		},
+		
+		cbd: {
+		id1: 22496,
+		id2: 16430,
+		id3: 2764,
+		center: {lat: 1.279148, lng: 103.845340},
+		class: "cbd",
+		name: "Central Business District"
+		},
+		
+		changi: {
+		id1: 12432,
+		id2: 23287,
+		id3: 16417,
+		center: { lat: 1.3644, lng: 103.9915},
+		class: "airport",
+		name: "Changi Airport"
+		}
+		};
+		queue()
+		.defer(d3.csv, "datasets/idackandataset1.csv")
+		.defer(d3.csv, "datasets/idackandataset2.csv")
+		.awaitAll(parseData)
+		
+		
+		function parseData(error, output) {
+		
+		console.log(error)
+		console.log(output)
+		output[0].forEach(function (d) {
+		d.hour = +d.hour
+		d.footfall = +d.footfall;
+		})
+		output[1]
+		.map(function(d) {return {shape_id:d.shape_id, gender_male:d.gender_male, gender_female:d.gender_female};})
+		
+		parsedCSV = output[0]
+		genderData = output[1]
+		}
+		
+		function getFootfall(date, id, hour) {
+		return parsedCSV.filter(function (d, i) {
+		if (d["shape id"] == id && d["day"] == date && d["hour"] == hour)
+		return d
+		})
+		}
+		
+		function createLargeMap(point, date) {
+		var consolidatedData = [];
+		console.log(getFootfall(date, largeLocations[point].id1, 1)[0].footfall)
+		for (var i=0; i < 24; i++) {
+		consolidatedData.push({hour: i, footfall: (getFootfall(date, largeLocations[point].id1, i)[0].footfall + getFootfall(date, largeLocations[point].id2, i)[0].footfall + getFootfall(date, largeLocations[point].id3, i)[0].footfall)})
+		}
+		console.log(consolidatedData)
+		
+		//Create a SVG with previous parameters
+		chart.svg = d3.select("#chart").append("svg")
+		.attr("class", "chart")
+		.attr("width", chart.width + chart.margin.left + chart.margin.right)
+		.attr("height", chart.height + chart.margin.top + chart.margin.bottom)
+		.append("g")
+		.attr("transform",
+		"translate(" + chart.margin.left + "," + chart.margin.top + ")");
+		
+		chart.svg.call(chart.tip);
+		
+		chart.x.domain(consolidatedData.map(function (d) { return d.hour; }));
+		chart.y.domain([0, d3.max(consolidatedData, function (d) { return d.footfall; })]);
+		
+		//Creation of X axis
+		chart.svg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + chart.height + ")")
+		.call(chart.xAxis)
+		.append("text")
+		.attr("y", 6)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text("Hour")
+		.selectAll("text")
+		.style("text-anchor", "end")
+		.attr("dx", "-.8em")
+		.attr("dy", "-.55em")
+		.attr("transform", "rotate(-90)");
+		
+		//Creation of Y axis
+		chart.svg.append("g")
+		.attr("class", "y axis")
+		.call(chart.yAxis)
+		.append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", 6)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text("Footfall");
+		
+		chart.categoryGroup = chart.svg.selectAll(".bar")
+		.data(consolidatedData)
+		.enter()
+		chart.bars = chart.categoryGroup.append("rect")
+		.attr("fill", function (d) {
+		if (d.footfall > 5000) {
+		return "#00441b";
+		} else if (d.footfall > 1000) {
+		return "#238b45";
+		}
+		return "#66c2a4";
+		})
+		.attr("x", function (d) { return chart.x(d.hour); })
+		.attr("width", chart.x.rangeBand())
+		.on('mouseover', chart.tip.show)
+		.on('mouseout', chart.tip.hide)
+		.attr("y", function (d, i) {
+		return chart.height;
+		})
+		.attr("height", 0)
+		.transition()
+		.duration(200)
+		.delay(function (d, i) {
+		return i * 50;
+		})
+		.attr("y", function(d, i) { return chart.y(d.footfall); })
+		.attr("height", function(d) { return chart.height - chart.y(d.footfall); })	
+		}
+		
+		
+		function editSmallMap(point, year) {
+		var consolidatedData = [];
+		for (var i=0; i < 24; i++) {
+		consolidatedData.push({hour: i, footfall: getFootfall(date, point, i)[0].footfall})
+		}
+		/*
+		barChart.tip.html(function (d,i) {
+		return "<strong>" + d.month + " "+ year + " :</strong><span style='color:red'>" + d.footfall + "</span>";
+		})
+		
+		barChart.svg.call(chart.tip);
+		*/
+		
+		chart.y.domain([0, d3.max(consolidatedData, function(d) { return d.footfall;})]);
+		
+		chart.svg.select(".y.axis")
+		.transition().duration(1500).ease("sin-in-out") 
+		.call(chart.yAxis); 
+		
+		chart.svg.selectAll("rect")
+		.data(consolidatedData)
+		
+		.transition().duration(1500) 
+		.attr("fill", function (d) {
+		if (d.footfall > 5000) {
+		return "#00441b";
+		} else if (d.footfall > 1000) {
+		return "#238b45";
+		}
+		return "#66c2a4";
+		})
+		.attr("y", function(d, i) { return chart.y(d.footfall); })
+		.attr("height", function(d) { return chart.height - chart.y(d.footfall); });
+		}
+		
+		function createSmallMap(point, date) {
+		var consolidatedData = [];
+		console.log(point)
+		for (var i=0; i < 24; i++) {
+		consolidatedData.push({hour: i, footfall: getFootfall(date, point, i)[0].footfall})
+		}
+		console.log(consolidatedData)
+		
+		//Create a SVG with previous parameters
+		chart.svg = d3.select("#chart").append("svg")
+		.attr("class", "chart")
+		.attr("width", chart.width + chart.margin.left + chart.margin.right)
+		.attr("height", chart.height + chart.margin.top + chart.margin.bottom)
+		.append("g")
+		.attr("transform",
+		"translate(" + chart.margin.left + "," + chart.margin.top + ")");
+		
+		chart.svg.call(chart.tip);
+		
+		chart.x.domain(consolidatedData.map(function (d) { return d.hour; }));
+		chart.y.domain([0, d3.max(consolidatedData, function (d) { return d.footfall; })]);
+		
+		//Creation of X axis
+		chart.svg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + chart.height + ")")
+		.call(chart.xAxis)
+		.append("text")
+		.attr("y", 6)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text("Hour")
+		.selectAll("text")
+		.style("text-anchor", "end")
+		.attr("dx", "-.8em")
+		.attr("dy", "-.55em")
+		.attr("transform", "rotate(-90)");
+		
+		//Creation of Y axis
+		chart.svg.append("g")
+		.attr("class", "y axis")
+		.call(chart.yAxis)
+		.append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", 6)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text("Footfall");
+		
+		chart.categoryGroup = chart.svg.selectAll(".bar")
+		.data(consolidatedData)
+		.enter()
+		chart.bars = chart.categoryGroup.append("rect")
+		.attr("fill", function (d) {
+		if (d.footfall > 5000) {
+		return "#00441b";
+		} else if (d.footfall > 1000) {
+		return "#238b45";
+		}
+		return "#66c2a4";
+		})
+		.attr("x", function (d) { return chart.x(d.hour); })
+		.attr("width", chart.x.rangeBand())
+		.on('mouseover', chart.tip.show)
+		.on('mouseout', chart.tip.hide)
+		.attr("y", function (d, i) {
+		return chart.height;
+		})
+		.attr("height", 0)
+		.transition()
+		.duration(200)
+		.delay(function (d, i) {
+		return i * 50;
+		})
+		.attr("y", function(d, i) { return chart.y(d.footfall); })
+		.attr("height", function(d) { return chart.height - chart.y(d.footfall); })	
+		}
+		
+		function CenterControl(controlDiv, map, infoWindow) {
+		
+		// Set CSS for the control border.
+		var controlUI = document.createElement('div');
+		controlUI.style.backgroundColor = '#fff';
+		controlUI.style.border = '2px solid #fff';
+		controlUI.style.borderRadius = '3px';
+		controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+		controlUI.style.cursor = 'pointer';
+		controlUI.style.margin = '10px';
+		controlUI.style.textAlign = 'center';
+		controlDiv.appendChild(controlUI);
+		
+		// Set CSS for the control interior.
+		var controlText = document.createElement('div');
+		controlText.style.color = 'rgb(25,25,25)';
+		controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+		controlText.style.fontSize = '11px';
+		controlText.style.lineHeight = '38px';
+		controlText.style.paddingLeft = '8px';
+		controlText.style.paddingRight = '8px';
+		controlText.innerHTML = 'Back';
+		controlUI.appendChild(controlText);
+		
+		
+		controlUI.addEventListener('click', function () {
+		map.setZoom(12)
+		map.setCenter({lat: 1.3521, lng: 103.8198})
+		infoWindow.close()
+		$(".chart").css("display", "none")
+		});
+		
+		}
+		
+		
+		function initMap() {
+		map = new google.maps.Map(document.getElementById('map'), {
+		center: { lat: 1.3521, lng: 103.8198 },
+		zoom: 12
+		});
+		var infoWindow = new google.maps.InfoWindow();
+		//Construct the circle for each value in footfall
+		
+		for (var point in largeLocations) {
+		console.log(largeLocations[point].class)
+		var color
+		var footfall = getFootfall(date, largeLocations[point].id1, hour)[0].footfall + getFootfall(date, largeLocations[point].id2, hour)[0].footfall + getFootfall(date, largeLocations[point].id3, hour)[0].footfall
+		if (footfall < 1000) {
+		color = '#66c2a4'
+		}
+		else if (footfall > 1000 && footfall < 5000) {
+		color = '#238b45'
+		}
+		else {
+		color = '#00441b'
+		}
+		//Add the location to the map
+		var cityCircle = new google.maps.Circle({
+		class: largeLocations[point].class,
+		name: largeLocations[point].name,
+		strokeColor: color,
+		fillColor: color,
+		strokeOpacity: 0.8,
+		strokeWeight: 2,
+		fillOpacity: 0.75,
+		map: map,
+		center: largeLocations[point].center,
+		radius: Math.sqrt(footfall) * 5,
+		visible: true
+		
+		})
+		
+		google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
+		return function () {
+		map.setZoom(15);
+		map.setCenter(cityCircle.getCenter());
+		$("#title").html("<h2>" + cityCircle.name + "</h2>")
+		$("#moreinfo > *").css("display", "none")
+		$("."+cityCircle.class).css("display", "inline")
+		if (generated) {
+		}
+		else {
+		generated = true
+		createLargeMap(point, date)
+		}
+		}
+		})(cityCircle, point));
+		
+		//Circles only appear when sufficiently zoomed out
+		map.addListener('zoom_changed', (function (cityCircle) {
+		return function () {
+		
+		if (map.getZoom() <= 14) {
+		cityCircle.setVisible(true)
+		clear();
+		}
+		if (map.getZoom() >= 15) {
+		cityCircle.setVisible(false);
+		}
+		}
+		})(cityCircle));
+		}
+		
+		for (var point in locations) {
+		var color
+		var footfall = getFootfall(date, locations[point].id, hour)[0].footfall
+		if (footfall < 1000) {
+		color = '#66c2a4'
+		}
+		else if (footfall > 1000 && footfall < 5000) {
+		color = '#238b45'
+		}
+		else {
+		color = '#00441b'
+		}
+		//Add the location to the map
+		var cityCircle = new google.maps.Circle({
+		id: locations[point].id,
+		name: locations[point].name,
+		//class: locations[point].class;
+		strokeColor: color,
+		fillColor: color,
+		strokeOpacity: 0.8,
+		strokeWeight: 2,
+		fillOpacity: 0.75,
+		map: map,
+		center: locations[point].center,
+		radius: Math.sqrt(footfall) * 5,
+		footfall: footfall,
+		visible: false
+		
+		})
+		
+		map.addListener('zoom_changed', (function (cityCircle) {
+		return function () {
+		if (map.getZoom() >= 15) {
+		cityCircle.setVisible(true);
+		}
+		if (map.getZoom() <= 14) {
+		cityCircle.setVisible(false);
+		}
+		}
+		})(cityCircle));
+		
+		google.maps.event.addListener(cityCircle, 'click', (function (cityCircle, point) {
+		return function () {
+		infoWindow.setContent("<div id='info'><p>" + date + " " + hour + "00:" + cityCircle.footfall+ "<br>Current Location:"+ cityCircle.name +"</p>");
+		infoWindow.setPosition(cityCircle.getCenter());
+		infoWindow.open(map);
+		$("#title").html("<h2>" + cityCircle.name + "</h2>")
+		$("#"+point).css("display", "inline")
+		
+		
+		if (generated) {
+		editSmallMap(cityCircle.id, date)
+		}
+		else {
+		createSmallMap(cityCircle.id, date)
+		generated = true
+		}
+		}
+		})(cityCircle, point));
+		
+		
+		
+		/*
+		//Graphic Code
+		
+		
+		
+		
+		//Creation of bars
+		
+		d3.select(window).on("resize", resized);
+		
+		chart.push({svg:svg, x:x, bars:bars})
+		function resized() {
+		
+		for (var i=0; i < chart.length; i++) {
+		//Get the width of the window
+		var w = d3.select("#chart").node().clientWidth;
+		
+		//Change the width of the svg
+		chart[i].svg
+		.attr("width", w);
+		
+		chart[i].x
+		.rangeRoundBands([0, w - margin.left - margin.right], .05);
+		
+		chart[i].bars
+		.attr("width", x.rangeBand())
+		.attr("x", function (d) { return x(d.hour); });
+		
+		chart[i].svg.select('.x.axis').call(xAxis)
+		.selectAll("text")
+		.style("text-anchor", "end")
+		.attr("dx", "-.8em")
+		.attr("dy", "-.55em")
+		.attr("transform", "rotate(-90)");
+		}
+		};
+		locations[point].chart = svg.node().outerHTML
+		
+		
+		
+		*/
+		}
+		
+		// Construct your control in whatever manner is appropriate.
+		// Generally, your constructor will want access to the
+		// DIV on which you'll attach the control UI to the Map.
+		var controlDiv = document.createElement('div');
+		
+		var myControl = new CenterControl(controlDiv, map, infoWindow);
+		
+		// We don't really need to set an index value here, but
+		// this would be how you do it. Note that we set this
+		// value as a property of the DIV itself.
+		controlDiv.index = 1;
+		
+		// Add the control to the map at a designated control position
+		// by pushing it on the position's array. This code will
+		// implicitly add the control to the DOM, through the Map
+		// object. You should not attach the control manually.
+		map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+		
+		map.addListener('zoom_changed', (function(infoWindow) {
+		return function() {
+		if (map.getZoom() <= 14) {
+		infoWindow.close()
+		clear()
+		}
+		}
+		})(infoWindow));
+		
+		function clear() {
+		$("#title").html("")
+		$("#chart").html("")
+		d3.select("#chart > svg").remove();
+		$("#moreinfo > *").css("display", "none")
+		generated = false
+		}
+		}
+		
+		</script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZbiC6OYs1vcz-qlkVsiZZ-hrCS0bsfmo&callback=initMap"
+		async defer></script>
+		</body>
+		</html>		

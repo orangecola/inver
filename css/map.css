@@ -11,10 +11,19 @@ html, body {
             height: 100%;
         }
 		
-		#charts{
-            font: 12px sans-serif !important;
-        }
-
+		#title > h2:nth-child(1) {
+			text-align: center;
+		}
+		
+		
+		#donutleft, #donutright {
+			width: 50%;
+			
+		}
+		
+		#donut {
+			display: flex;
+		}
         .axis path,
         .axis line {
             fill: none;
@@ -34,6 +43,10 @@ html, body {
             display: none;
         }
 
+		#moreinfo > * {
+			display: none;
+		}
+		
         .d3-tip {
             line-height: 1 !important;
             font-weight: bold !important;
@@ -41,6 +54,7 @@ html, body {
             background: rgba(0, 0, 0, 0.8) !important;
             color: #fff !important;
             border-radius: 2px !important;
+			z-index: 100;
         }
 
             /* Creates a small triangle extender for the tooltip */

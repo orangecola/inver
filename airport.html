@@ -7,7 +7,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="description" content="A portfolio template that uses Material Design Lite.">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-		<title>MDL-Static Website</title>
+		<title>International Visitor Arrivals</title>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
 		<link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.grey-pink.min.css" />
 		<link rel="stylesheet" href="css/index.css" />
@@ -16,22 +16,28 @@
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 		
 		<style>
-			html, body { height: 100%; padding: 0; margin: 0; width: 100%; }
-			
-			.box {
-				border-width:1px;
-				border-style:solid;
-				float:left;
-				width: 50%;
-				height: 50%;
-				-webkit-box-sixing: border-box;
-				-moz-box-sizing: border-box; 
-				box-sizing: border-box;
-				overflow:hidden;
+			body { 
+			height: 100%; 
+			padding: 0; 
+			margin: 0; 
+			width: 100%; 
+			background-image: url(images/clouds.jpg);
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-o-background-size: cover;
+			background-size: cover;
 			}
 			
-			.bar {
-			fill: steelblue;
+			.box {
+			border-width:1px;
+			border-style:solid;
+			float:left;
+			width: 50%;
+			height: 50%;
+			-webkit-box-sixing: border-box;
+			-moz-box-sizing: border-box; 
+			box-sizing: border-box;
+			overflow:hidden;
 			}
 			
 			.bar:hover {
@@ -66,10 +72,38 @@
 			stroke-width: 1.5px;
 			}
 			
+			.d3-tip {
+            line-height: 1;
+            font-weight: bold;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 2px;
+			}
 			
+            /* Creates a small triangle extender for the tooltip */
+            .d3-tip:after {
+			box-sizing: border-box;
+			display: inline;
+			font-size: 10px;
+			width: 100%;
+			line-height: 1;
+			color: rgba(0, 0, 0, 0.8);
+			content: "\25BC";
+			position: absolute;
+			text-align: center;
+            }
+			
+            /* Style northward tooltips differently */
+            .d3-tip.n:after {
+			margin: -1px 0 0 0;
+			top: 100%;
+			left: 0;
+            }
 		</style>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 		<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 	</head>
 	
 	<body>
@@ -79,21 +113,21 @@
 			</div>
 		</div>
 		<div id="div3" class="box">
-				<div class="mdl-card__title">
+			<div class="mdl-card__title">
 				<!--<h2 class="mdl-card__title-text">Events happening</h2>-->
-				</div>
-				
-				<div class="mdl-card__supporting-text">
-					The line graph on the left shows the monthly visitor arrivals for the past 15 years.
-				</div>
-	
+			</div>
+			
+			<div class="mdl-card__supporting-text">
+				The line graph on the left shows the monthly visitor arrivals for the past 15 years.
+			</div>
+			
 		</div>
 		<div id="div2" class="box">
 			<div class="mdl-card__title">
 				<h2 class="mdl-card__title-text">Visitor Arrival Details By Year </h2>
 			</div>
 			<select id = "year" name = "year">
-				<option value="">Please Select</option>
+			<!--<option value="">Please Select</option>-->
 			</select>
 		</div>
 		<div id="div4" class="box">
@@ -110,8 +144,8 @@
 			
 			
 			var margin = {top: 20, right: 20, bottom: 50, left: 60},
-			width = $("#div2").width() - margin.left - margin.right,
-			height = $("#div2").height() - $("#div2 > div > h2").height() - 40 - $("#div2 > select").height() - margin.top - margin.bottom;
+			width = $("#div1").width() - margin.left - margin.right,
+			height = $("#div1").height() - $("#div1 > div > h2").height() - margin.top - margin.bottom;
 			
 			console.log($("#div2").height() - $("#div2 > div > h2").height())
 			
@@ -143,16 +177,18 @@
 			.append("g")
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 			
+			var tip = d3.tip()
+			.attr('class', 'd3-tip')
+			.offset([-10, 0])
+			.html(function (d) {
+				return "<strong>March 2003 : </strong><span style='color:red'>US invades Iraq</span>";
+			})
 			
-			
+			svg.call(tip);
 			
 			d3.csv("datasets/total-visitor-international-arrivals-monthly.csv", type, function(error, data) {
-				
-				console.log(data)
 				x.domain(d3.extent(data, function(d) { return d.month; }));
 				y.domain(d3.extent(data, function(d) { return d.total_international_visitor_arrivals; }));
-				
-				
 				
 				svg.append("g")
 				.attr("class", "x axis")
@@ -173,99 +209,150 @@
 				.datum(data)
 				.attr("class", "line")
 				.attr("d", line);
-
+				
 				var totalLength = path.node().getTotalLength();
-
+				
 				path
-				  .attr("stroke-dasharray", totalLength + " " + totalLength)
-				  .attr("stroke-dashoffset", totalLength)
-				  .transition()
-					.duration(3000)
-					.ease("linear")
-					.attr("stroke-dashoffset", 0);
+				.attr("stroke-dasharray", totalLength + " " + totalLength)
+				.attr("stroke-dashoffset", totalLength)
+				.transition()
+				.duration(3000)
+				.ease("linear")
+				.attr("stroke-dashoffset", 0);
+				
+				svg.selectAll("dot")
+				.data(data)
+				.enter().append("circle")
+				.filter(function(d) { return (d.month.getFullYear() == 2003 && d.month.getMonth() == 2)})
+				.style("fill", "red")
+				.attr("r", 3.5)
+				.attr("cx", function(d) { return x(d.month); })
+				.attr("cy", function(d) { return y(d.total_international_visitor_arrivals); })
+				.on('mouseover', tip.show)
+				.on('mouseout', tip.hide)
 				
 				year = data.unique().sort(function(a, b){return b.month.getFullYear()-a.month.getFullYear()});
 				
-				console.log(year)
+				
 				
 				for (var i=0; i < year.length; i++){
-				$("#year").append("<option value = '" + year[i].month.getFullYear() + "'>" + year[i].month.getFullYear() + "</option>")
+					$("#year").append("<option value = '" + year[i].month.getFullYear() + "'>" + year[i].month.getFullYear() + "</option>")
 				}
 				
 				
-				
+				var barChart = createData(data, 2015);
 				$(function() {
 					$("#year").on("change",function() {
 						if (this.value != "")
-						displayData(data, this.value)
+						displayData(barChart, data, this.value)
 					}); 
 				});
 			});
 			
+			function displayData(barChart, data, year) {
+				barChart.data = data.filter(function(d) { return d.month.getFullYear() == year })
+				.sort(function(a, b) {return d3.ascending(a.month, b.month);})
+				.map(function(d, i) {return {month:barChart.words[i], total_international_visitor_arrivals : d.total_international_visitor_arrivals};})
+				
+				barChart.tip.html(function (d,i) {
+				return "<strong>" + d.month + " "+ year + " :</strong><span style='color:red'>" + d.total_international_visitor_arrivals + "</span>";
+				})
+				
+				barChart.svg.call(barChart.tip);
+				
+				
+				barChart.y.domain([0, d3.max(barChart.data, function(d) { return d.total_international_visitor_arrivals;})]);
+				
+				barChart.svg.select(".y.axis")
+                    .transition().duration(1500).ease("sin-in-out") 
+                    .call(barChart.yAxis); 
+					
+				barChart.svg.selectAll(".bar")
+				.data(barChart.data)
+
+				.transition().duration(1500) 
+
+				.attr("y", function(d, i) { return barChart.y(d.total_international_visitor_arrivals); })
+				.attr("height", function(d) { return barChart.height - barChart.y(d.total_international_visitor_arrivals); })	
+			}
 			
-			function displayData(data, year) {
-			
-				var words = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-				$("#div2 > svg").remove()
-				data = data.filter(function(d) { return d.month.getFullYear() == year })
-				  .sort(function(a, b) {return d3.ascending(a.month, b.month);})
-				  .map(function(d, i) {return {month:words[i], total_international_visitor_arrivals : d.total_international_visitor_arrivals};})
-				var margin = {top: 20, right: 20, bottom: 60, left: 60}
-				var width = $("#div2").width() - margin.left - margin.right
-				var height = $("#div2").height() - $("#div2 > .mdl-card__title").height()- $('#year').height()  - margin.top - margin.bottom;
+			function createData(data, year) {
+				var barChart = {}
+				barChart.words = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+				barChart.data = data.filter(function(d) { return d.month.getFullYear() == year })
+				.sort(function(a, b) {return d3.ascending(a.month, b.month);})
+				.map(function(d, i) {return {month:barChart.words[i], total_international_visitor_arrivals : d.total_international_visitor_arrivals};})
+				barChart.margin = {top: 20, right: 20, bottom: 60, left: 60}
+				barChart.width = $("#div2").width() - barChart.margin.left - barChart.margin.right
+				barChart.height = $("#div2").height() - $("#div2 > .mdl-card__title").height()- $('#year').height()  - barChart.margin.top - barChart.margin.bottom;
 				
-				console.log(data)
-				var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+				console.log(barChart.data)
 				
-				var y = d3.scale.linear().range([height, 0])
+				barChart.x = d3.scale.ordinal().rangeRoundBands([0, barChart.width], .1);
 				
-				var xAxis = d3.svg.axis()
-				  .scale(x)
-				  .orient("bottom");
+				barChart.y = d3.scale.linear().range([barChart.height, 0])
 				
-				var yAxis = d3.svg.axis()
-				  .scale(y)
-				  .orient("left")
-				  //.ticks(10, "%");
-				  
-				var svg = d3.select("#div2").append("svg")
-				  .attr("width", width + margin.left + margin.right)
-				  .attr("height", height + margin.top + margin.bottom)
+				barChart.xAxis = d3.svg.axis()
+				.scale(barChart.x)
+				.orient("bottom");
+				
+				barChart.yAxis = d3.svg.axis()
+				.scale(barChart.y)
+				.orient("left")
+				
+				barChart.svg = d3.select("#div2").append("svg")
+				.attr("width", barChart.width + barChart.margin.left + barChart.margin.right)
+				.attr("height", barChart.height + barChart.margin.top + barChart.margin.bottom)
 				.append("g")
-				  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-				  
-				x.domain(data.map(function(d) {return d.month;}));
-				y.domain([0, d3.max(data, function(d) { return d.total_international_visitor_arrivals;})]);
+				.attr("transform", "translate(" + barChart.margin.left + "," + barChart.margin.top + ")");
 				
-				svg.append("g")
-				  .attr("class", "x axis")
-				  .attr("transform", "translate(0," + height + ")")
-				  .call(xAxis);
+				barChart.tip = d3.tip()
+				.attr('class', 'd3-tip')
+				.offset([-10, 0])
+				.html(function (d,i) {
+				return "<strong>" + d.month + " "+ year + " :</strong><span style='color:red'>" + d.total_international_visitor_arrivals + "</span>";
+				})
 				
-				svg.append("g")
-				  .attr("class", "y axis")
-				  .call(yAxis)
-				  
-				svg.selectAll(".bar")
-				  .data(data)
+				barChart.svg.call(barChart.tip);
+				
+				barChart.x.domain(barChart.data.map(function(d) {return d.month;}));
+				barChart.y.domain([0, d3.max(barChart.data, function(d) { return d.total_international_visitor_arrivals;})]);
+				
+				barChart.svg.append("g")
+				.attr("class", "x axis")
+				.attr("transform", "translate(0," + barChart.height + ")")
+				.call(barChart.xAxis);
+				
+				barChart.svg.append("g")
+				.attr("class", "y axis")
+				.call(barChart.yAxis)
+				
+				barChart.svg.selectAll(".bar")
+				.data(barChart.data)
 				.enter().append("rect")
-				  .attr("class", "bar")
-				  .attr("x", function(d) { return x(d.month); })
-				  .attr("width", x.rangeBand())
-				  .attr("fill", function(d) { return color(d)})
-				  .attr("y", function (d, i) {
-					  return height;
-				  })
-				  .attr("height", 0)
-					.transition()
-					.duration(200)
-					.delay(function (d, i) {
-						return i * 50;
-					})
-				  .attr("y", function(d, i) { return height - y(d.total_international_visitor_arrivals); })
-				  .attr("height", function(d) { return y(d.total_international_visitor_arrivals); });
+				.attr("class", "bar")
+				.attr("x", function(d) { return barChart.x(d.month); })
+				.attr("width", barChart.x.rangeBand())
+				.attr("fill", function(d, i) { return color(i)})
+				.on('mouseover', barChart.tip.show)
+				.on('mouseout', barChart.tip.hide)
+				.attr("y", function (d, i) {
+					return barChart.height;
+				})
+				.attr("height", 0)
+				.transition()
+				.duration(200)
+				.delay(function (d, i) {
+					return i * 50;
+				})
+				.attr("y", function(d, i) { return barChart.y(d.total_international_visitor_arrivals); })
+				.attr("height", function(d) { return barChart.height - barChart.y(d.total_international_visitor_arrivals); })
+				
+				return barChart
 				
 			}
+			
+			
 			
 			function type(d) {
 				d.month = formatmonth.parse(d.month);
