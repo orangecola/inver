@@ -16,10 +16,7 @@ html, body {
 		}
 		
 		
-		#donutleft, #donutright {
-			width: 50%;
-			
-		}
+		
 		
 		#donut {
 			display: flex;
@@ -30,7 +27,8 @@ html, body {
             stroke: #000;
             shape-rendering: crispEdges;
         }
-
+		
+		
         .bar {
             fill: orange;
         }

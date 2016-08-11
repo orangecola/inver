@@ -14,6 +14,11 @@
 		<link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.cyan-light_blue.min.css">
 		<link rel="stylesheet" href="css/dashboard.css">
 		<style>
+			text:hover, .bar:hover, .dot:hover {
+				fill:black !important;
+			}
+		
+			
 			#view-source {
 			position: fixed;
 			display: block;
@@ -130,14 +135,16 @@
 			<div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
 				<nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
 					<a class="mdl-navigation__link" onclick="summary()">Summary</a>
-					<a class="mdl-navigation__link" onclick="display(result[0])">313@Somerset</a>
+					<a class="mdl-navigation__link" onclick="display(result[0])">Adventure Cove</a>
 					<a class="mdl-navigation__link" onclick="display(result[1])">Ang Mo Kio</a>
-					<a class="mdl-navigation__link" onclick="display(result[2])">Adventure Cove</a>
-					<a class="mdl-navigation__link" onclick="display(result[3])">Changi</a>
+					<a class="mdl-navigation__link" onclick="display(result[2])">ION Orchard</a>
+					<a class="mdl-navigation__link" onclick="display(result[3])">Lucky Plaza</a>
 					<a class="mdl-navigation__link" onclick="display(result[4])">Marina Bay</a>
-					<a class="mdl-navigation__link" onclick="display(result[5])">Sentosa</a>
-					<a class="mdl-navigation__link" onclick="display(result[6])">Suntec</a>
-					<a class="mdl-navigation__link" onclick="display(result[7])">Suntec City</a>
+					<a class="mdl-navigation__link" onclick="display(result[5])">SEA Aquarium</a>
+					<a class="mdl-navigation__link" onclick="display(result[6])">SG Travel</a>		
+					<a class="mdl-navigation__link" onclick="display(result[7])">Singapore Flyer</a>
+					<a class="mdl-navigation__link" onclick="display(result[8])">Universal Studios Singapore</a>
+					<a class="mdl-navigation__link" onclick="display(result[9])">Vivocity</a>
 				</nav>
 			</div>
 		</div>
@@ -148,60 +155,18 @@
 				$(".summaryHeader").css("display", "flex")
 			}
 			
-			
-			
-			var hashtag = [
-			{
-				className: "._313somerset",
-				displayName: "#313@somerset",
-				displayParameter : "_313somerset"
-			},
-			{
-				className: ".angmokio",
-				displayName: "#angmokio",
-				displayParameter: "angmokio"
-			},
-			{
-				className: ".adventurecove",
-				displayName: "#adventurecove",
-				displayParameter: "adventurecove"
-			},
-			{
-				className: ".changi",
-				displayName: "#changi",
-				displayParameter: "changi"
-			},
-			{
-				className: ".marinabay",
-				displayName: "#marinabay",
-				displayParameter: "marinabay"
-			},
-			{
-				className: ".sentosa",
-				displayName: "#sentosa",
-				displayParameter: "sentosa"
-			},
-			{
-				className: ".suntec",
-				displayName: "#suntec",
-				displayParameter: "suntec"
-			},
-			{
-				className: ".sunteccity",
-				displayName: "#sunteccity",
-				displayParameter: "sunteccity"
-			},
-			]
-			
 			queue()
-			.defer(d3.json, 'datasets/hashtag/313@somerset.json')
-			.defer(d3.json, 'datasets/hashtag/angmokio.json')
 			.defer(d3.json, 'datasets/hashtag/adventurecove.json')
-			.defer(d3.json, 'datasets/hashtag/Changi.json')
+			.defer(d3.json, 'datasets/hashtag/angmokio.json')
+			.defer(d3.json, 'datasets/hashtag/ionorchard.json')
+			.defer(d3.json, 'datasets/hashtag/Luckyplaza.json')
 			.defer(d3.json, 'datasets/hashtag/marinabay.json')
-			.defer(d3.json, 'datasets/hashtag/Sentosa.json')
-			.defer(d3.json, 'datasets/hashtag/suntec.json')
-			.defer(d3.json, 'datasets/hashtag/sunteccity.json')
+			.defer(d3.json, 'datasets/hashtag/SEAaquarium.json')
+			.defer(d3.json, 'datasets/hashtag/SGTravel.json')
+			.defer(d3.json, 'datasets/hashtag/Singaporeflyer.json')
+			.defer(d3.json, 'datasets/hashtag/universalstudiossingapore.json')
+			.defer(d3.json, 'datasets/hashtag/vivocity.json')
+			
 			
 			.defer(d3.json, 'datasets/summary/summaryJson.json')
 			.awaitAll(parseData);
@@ -209,7 +174,8 @@
 			function parseData(error, output)  {
 				
 				result = output
-				drawSummary(result[8])
+				console.log(result[10])
+				drawSummary(result[10])
 				summary()
 				
 				
@@ -220,6 +186,8 @@
 				var summaryDiagram = {
 					margin: {top: 20, right: 30, bottom: 40, left: 30},
 				}
+				
+				
 				
 				//Summary Diagram setup
 				summaryDiagram.width = 600 - summaryDiagram.margin.left - summaryDiagram.margin.right
@@ -241,8 +209,6 @@
 				.append("g")
 				.attr("transform", "translate(" + summaryDiagram.margin.left + "," + summaryDiagram.margin.top + ")")
 				
-				
-				console.log(data)
 				$('.summaryDiagram').css('height',$(window).height() - $('.mdl-tabs__tab-bar').height()-33)
 				summaryDiagram.x.domain(d3.extent(data, function(d) { return d.Average_Score}))
 				summaryDiagram.y.domain(data.map(function(d){return d.Name}))
@@ -282,7 +248,10 @@
 				
 				//Filling out tweet panel
 				//fix
-				//$('#tweets-panel > * > .tweets').append('<h5>' + hashtag[i].displayName + ' Tweets</h5>')
+				$('#tweets-panel > * > .tweets').append('<h5>' + data.name + ' Tweets</h5>')
+				$('#topics-panel > * > .topics').append('<h5>' + data.name + ' Topics</h5>')
+				$('#sentiments-panel > * > .sentiments').append('<h5>' + data.name + ' Sentiment Details</h5>')
+				
 				var selection = d3.select("#tweets-panel > * > .tweets").selectAll("p")
 				.data(data.tweet)
 				.enter()
@@ -293,13 +262,13 @@
 				//Filling out topic panel
 				var topicDiagram = {
 					width: 600,
-					height: 600,
-					countScale: d3.scale.linear().range([20, 70]),
+					height: 420,
+					countScale: d3.scale.linear().range([20, 60]),
 				}
 				
 				topicDiagram.topics = data.topics
 				
-				.map(function(d){ return {text: d.Topic_Name, size: d.Number_of_Tweets, className: d.className, tweets: d.Tweets, svgWidth: topicDiagram.width, svgHeight: topicDiagram.height, fill: d3.scale.category20()}})
+				.map(function(d){ return {text: d.Topic_Name, size: d.Number_of_Tweets, tweets: d.Tweets, svgWidth: topicDiagram.width, svgHeight: topicDiagram.height, fill: d3.scale.category20()}})
 				.sort(function(a, b) {return d3.descending(a.size, b.size);})
 				.slice(0,20)
 				topicDiagram.countScale.domain([d3.min(topicDiagram.topics, function(d) {return d.size;}), d3.max(topicDiagram.topics, function(d){return d.size;})])
@@ -317,7 +286,7 @@
 				}
 				
 				sentimentDiagram.width = 600 - sentimentDiagram.margin.left - sentimentDiagram.margin.right
-				sentimentDiagram.height = 600 - sentimentDiagram.margin.top - sentimentDiagram.margin.bottom
+				sentimentDiagram.height = 420 - sentimentDiagram.margin.top - sentimentDiagram.margin.bottom
 				
 				sentimentDiagram.xValue = function(d) { return d.Number_of_Tweets;}, // data -> value
 				sentimentDiagram.xScale = d3.scale.linear().range([0, sentimentDiagram.width]), // value -> display
@@ -391,7 +360,7 @@
 				var result = "<h5>" + d.Name + " Top 5 Positive words</h5>"
 				result += "<ul>"
 				for (var i=0; i < d.Top_5_Positive_Words.length; i++) {
-					result += "<li>" + d.Top_5_Positive_Words[i][0]+ "</li>"
+					result += "<li>" + d.Top_5_Positive_Words[i].Word+ "</li>"
 				}
 				result += "</ul>"
 				$(".summaryPositive").html(result)
@@ -399,7 +368,7 @@
 				var result = "<h5>" + d.Name + " Top 5 Negative words</h5>"
 				result += "<ul>"
 				for (var i=0; i < d.Top_5_Negative_Words.length; i++) {
-					result += "<li>" + d.Top_5_Negative_Words[i][0]+ "</li>"
+					result += "<li>" + d.Top_5_Negative_Words[i].Word+ "</li>"
 				}
 				result += "</ul>"
 				$(".summaryNegative").html(result)
@@ -428,6 +397,7 @@
 				result += "Topics: " + d.Topics + "<br>"
 				result += "Tweet: " + d.Tweet + "<br>"
 				result += "Sentiment: " + d.Sentiment + "</p>"
+				/*
 				result += "<h5>Sentiment Analysis</h5>"
 				result += "<table border='1'>"
 				//Row 1
@@ -471,6 +441,7 @@
 				result +="</td>"
 				result += "</tr>"
 				result += "</table>"
+				*/
 				$("#tweets-panel > * > .tweetDetails").html(result)
 			}
 			
@@ -480,7 +451,7 @@
 				.attr("height", words[0].svgHeight)
 				
 				.append("g")
-				.attr("transform", "translate("+ (words[0].svgWidth/2) + "," + (words[0].svgWidth/2) + ")")
+				.attr("transform", "translate("+ (words[0].svgWidth/2) + "," + (words[0].svgHeight/2) + ")")
 				.selectAll("text")
 				.data(words)
 				.enter().append("text")
